@@ -388,6 +388,35 @@ public class MessagesController extends BaseController implements NotificationCe
     private boolean loadingSuggestedFilters;
     private boolean loadingRemoteFilters;
     public boolean dialogFiltersLoaded;
+    private one.axgram.core.folders.AxFolderIdReservations axFolderReservations;
+    private volatile one.axgram.core.folders.AxFolderUiCoordinator axFolderUiCoordinator;
+    private final java.util.concurrent.atomic.AtomicLong axFolderSessionGeneration = new java.util.concurrent.atomic.AtomicLong();
+
+    public long getAxFolderSessionGeneration() { return axFolderSessionGeneration.get(); }
+
+    public one.axgram.core.folders.AxFolderUiCoordinator getAxFolderUiCoordinator() { return axFolderUiCoordinator; }
+    public void setAxFolderUiCoordinator(one.axgram.core.folders.AxFolderUiCoordinator coordinator) {
+        if (android.os.Looper.myLooper() != android.os.Looper.getMainLooper()) throw new IllegalStateException("Folder UI queue required");
+        axFolderUiCoordinator = coordinator;
+    }
+
+    public synchronized one.axgram.core.folders.AxFolderIdReservations getAxFolderReservations() {
+        long owner = getUserConfig().getClientUserId();
+        if (owner <= 0) return null;
+        if (axFolderReservations == null || axFolderReservations.account != owner)
+            axFolderReservations = new one.axgram.core.folders.AxFolderIdReservations(owner);
+        return axFolderReservations;
+    }
+
+    public int reserveAxLocalFilterId(DialogFilter draft) {
+        if (android.os.Looper.myLooper() != android.os.Looper.getMainLooper()) throw new IllegalStateException("Folder UI queue required");
+        one.axgram.core.folders.AxFolderIdReservations reservations = getAxFolderReservations();
+        if (reservations == null) throw new IllegalStateException("Account required");
+        ArrayList<Integer> visible = new ArrayList<>();
+        for (DialogFilter filter : dialogFilters) visible.add(filter.id);
+        if (draft.axSyncUuid == null) draft.axSyncUuid = java.util.UUID.randomUUID().toString();
+        return reservations.reserveDraft(draft, visible);
+    }
     public ArrayList<TLRPC.TL_dialogFilterSuggested> suggestedFilters = new ArrayList<>();
 
     private final LongSparseArray<ArrayList<TLRPC.Updates>> updatesQueueChannels = new LongSparseArray<>();
@@ -1396,6 +1425,7 @@ public class MessagesController extends BaseController implements NotificationCe
 
     public static class DialogFilter {
         public int id;
+        public String axSyncUuid;
         public String name;
         public ArrayList<TLRPC.MessageEntity> entities = new ArrayList<>();
         public int unreadCount;
@@ -1435,7 +1465,10 @@ public class MessagesController extends BaseController implements NotificationCe
             if (alwaysShow.contains(dialogId)) {
                 return true;
             }
-            if (d.folder_id != 0 && (flags & DIALOG_FILTER_FLAG_EXCLUDE_ARCHIVED) != 0) {
+            if (!one.axgram.core.folders.AxFolderArchiveRules.matches(
+                    (flags & DIALOG_FILTER_FLAG_ONLY_ARCHIVED) != 0,
+                    (flags & DIALOG_FILTER_FLAG_EXCLUDE_ARCHIVED) != 0,
+                    d.folder_id != 0)) {
                 return false;
             }
             MessagesController messagesController = accountInstance.getMessagesController();
@@ -2421,7 +2454,7 @@ public class MessagesController extends BaseController implements NotificationCe
 
             AndroidUtilities.runOnUIThread(() -> {
                 if (remote != 2) {
-                    dialogFilters = filters;
+                    dialogFilters = axFolderUiCoordinator != null && dialogFiltersLoaded ? axFolderUiCoordinator.mergeTelegramFilters(filters) : filters;
                     dialogFiltersById.clear();
                     for (int a = 0, N = dialogFilters.size(); a < N; a++) {
                         DialogFilter filter = dialogFilters.get(a);
@@ -2439,6 +2472,8 @@ public class MessagesController extends BaseController implements NotificationCe
                     putChats(chats, true);
                     dialogFiltersLoaded = true;
                     getNotificationCenter().postNotificationName(NotificationCenter.dialogFiltersUpdated);
+                    if (axFolderUiCoordinator != null) axFolderUiCoordinator.captureNativeChange();
+                    one.axgram.core.folders.AxFolderSession.foldersLoaded(getAccountInstance());
                     if (remote == 0) {
                         loadRemoteFilters(false);
                     }
@@ -2747,6 +2782,7 @@ public class MessagesController extends BaseController implements NotificationCe
     }
 
     public void addFilter(DialogFilter filter, boolean atBegin) {
+        if (isLocalFilter(filter) && filter.axSyncUuid == null) filter.axSyncUuid = java.util.UUID.randomUUID().toString();
         if (atBegin) {
             int order = 254;
             for (int a = 0, N = dialogFilters.size(); a < N; a++) {
@@ -2771,6 +2807,24 @@ public class MessagesController extends BaseController implements NotificationCe
             SharedConfig.updateChatListSwipeSetting(SwipeGestureSettingsView.SWIPE_GESTURE_FOLDERS);
         }
         lockFiltersInternal();
+    }
+
+    public boolean applyAxFolderProjection(one.axgram.core.folders.AxFolderUiProjection projection) throws org.json.JSONException {
+        if (android.os.Looper.myLooper() != android.os.Looper.getMainLooper()) throw new IllegalStateException("Folder UI queue required");
+        if (!dialogFiltersLoaded || projection.account != getUserConfig().getClientUserId() || frozenDialogFilters != null) return false;
+        ArrayList<DialogFilter> updated = projection.applyIfUnchanged(dialogFilters);
+        if (updated == null) return false;
+        dialogFilters = updated;
+        dialogFiltersById.clear();
+        for (DialogFilter filter : updated) dialogFiltersById.put(filter.id, filter);
+        for (int i = 0; i < selectedDialogFilter.length; i++) {
+            if (selectedDialogFilter[i] != null && !updated.contains(selectedDialogFilter[i])) selectedDialogFilter[i] = null;
+        }
+        lockFiltersInternal();
+        sortDialogs(null);
+        getNotificationCenter().postNotificationName(NotificationCenter.dialogFiltersUpdated);
+        getNotificationCenter().postNotificationName(NotificationCenter.dialogsNeedReload, true);
+        return true;
     }
 
     public static TLRPC.TL_emojiStatusCollectible emojiStatusCollectibleFromGift(TL_stars.TL_starGiftUnique gift) {
@@ -6659,6 +6713,14 @@ public class MessagesController extends BaseController implements NotificationCe
     }
 
     public void cleanup() {
+        synchronized (this) {
+            axFolderSessionGeneration.incrementAndGet();
+            axFolderReservations = null;
+        }
+        if (axFolderUiCoordinator != null) axFolderUiCoordinator.stopForLogout();
+        one.axgram.core.folders.AxFolderRuntime.stopForLogout(getAccountInstance());
+        one.axgram.core.folders.AxFolderSession.stopForLogout(getAccountInstance());
+        one.axgram.core.AxDeletedMessages.clearSessionCache(currentAccount);
         getContactsController().cleanup();
         MediaController.getInstance().cleanup();
         getNotificationsController().cleanup();

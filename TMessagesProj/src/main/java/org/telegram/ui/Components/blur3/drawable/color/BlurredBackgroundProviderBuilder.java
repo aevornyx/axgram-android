@@ -8,6 +8,12 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Stories.DarkThemeResourceProvider;
 
 public class BlurredBackgroundProviderBuilder implements BlurredBackgroundProvider {
+    private boolean axAppearanceControls;
+    public BlurredBackgroundProviderBuilder setAxAppearanceControls(boolean enabled) {
+        axAppearanceControls = enabled;
+        return this;
+    }
+    @Override public boolean usesAxAppearanceControls() { return axAppearanceControls; }
     private final Theme.ResourcesProvider resourcesProvider;
 
     public BlurredBackgroundProviderBuilder(Theme.ResourcesProvider resourcesProvider) {

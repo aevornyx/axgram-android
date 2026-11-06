@@ -112,6 +112,9 @@ import one.axgram.core.folder.FolderIconHelper;
 import one.axgram.core.folder.IconSelectorAlert;
 
 public class FilterCreateActivity extends BaseFragment {
+    private one.axgram.core.folders.AxFolderIdReservations axDraftReservations;
+    private one.axgram.core.folders.AxFolderReplica axEditBaseline;
+    private long axSaveGeneration;
 
     private RecyclerListView listView;
     private ListAdapter adapter;
@@ -205,9 +208,12 @@ public class FilterCreateActivity extends BaseFragment {
             int serverLimit = controller.getEffectiveFiltersLimit();
             int remoteCount = controller.getRemoteFiltersCount() - 1;
             boolean local = remoteCount >= serverLimit;
-            filter.id = local ? MessagesController.LOCAL_FILTER_MIN_ID : 2;
-            while (controller.dialogFiltersById.get(filter.id) != null) {
-                filter.id++;
+            if (local) {
+                filter.id = controller.reserveAxLocalFilterId(filter);
+                axDraftReservations = controller.getAxFolderReservations();
+            } else {
+                filter.id = 2;
+                while (controller.dialogFiltersById.get(filter.id) != null) filter.id++;
             }
             FileLog.d("AxGram папки: новая папка id=" + filter.id + (local ? " (локальная)" : " (серверная)")
                     + ", серверных сейчас " + remoteCount + ", предел " + serverLimit
@@ -232,6 +238,11 @@ public class FilterCreateActivity extends BaseFragment {
         }
         newNeverShow = new ArrayList<>(filter.neverShow);
         newPinned = filter.pinnedDialogs.clone();
+        one.axgram.core.folders.AxFolderUiCoordinator coordinator = getMessagesController().getAxFolderUiCoordinator();
+        if (coordinator != null) {
+            try { axEditBaseline = coordinator.editorSnapshot(); }
+            catch (Exception error) { FileLog.e("AxGram folder editor baseline: " + error.getClass().getSimpleName()); }
+        }
     }
 
     private int requestingInvitesReqId;
@@ -272,6 +283,8 @@ public class FilterCreateActivity extends BaseFragment {
     @Override
     public void onFragmentDestroy() {
         super.onFragmentDestroy();
+        if (axDraftReservations != null && getMessagesController().dialogFiltersById.get(filter.id) != filter)
+            axDraftReservations.releaseDraft(filter);
         if (requestingInvitesReqId != 0) {
             getConnectionsManager().cancelRequest(requestingInvitesReqId, true);
         }
@@ -1080,7 +1093,6 @@ public class FilterCreateActivity extends BaseFragment {
 
             hasUserChanged = false;
             creatingNew = false;
-            filter.flags = newFilterFlags;
             checkDoneButton(true);
 
             getNotificationCenter().postNotificationName(NotificationCenter.dialogFiltersUpdated);
@@ -1123,6 +1135,54 @@ public class FilterCreateActivity extends BaseFragment {
         }
     }
 
+    private void saveAxLocal(one.axgram.core.folders.AxFolderUiCoordinator coordinator, MessagesController.DialogFilter draft,
+            boolean creating, boolean atBegin, AlertDialog progress, Runnable onFinish) {
+        if (axEditBaseline == null) {
+            dismissAxSaveProgress(progress);
+            showAxSaveError("Редактор был открыт до включения синхронизации. Откройте папку заново, чтобы безопасно сохранить изменения.");
+            return;
+        }
+        final long request = ++axSaveGeneration;
+        coordinator.submitEditor(axEditBaseline, draft, creating, atBegin, state -> {
+            dismissAxSaveProgress(progress);
+            if (request != axSaveGeneration || isFinished) return;
+            try {
+                MessagesController.DialogFilter saved = null;
+                for (MessagesController.DialogFilter local : state.nativeFolders()) if (draft.axSyncUuid.equals(local.axSyncUuid)) { saved = local; break; }
+                if (saved == null) {
+                    showAxSaveError("Папка была удалена на другом устройстве. Изменения не применены; черновик остаётся в редакторе.");
+                    return;
+                }
+                MessagesController.DialogFilter visible = getMessagesController().dialogFiltersById.get(saved.id);
+                filter = visible != null && saved.axSyncUuid.equals(visible.axSyncUuid) ? visible : saved;
+                axEditBaseline = state;
+                newFilterFlags = saved.flags; newFilterEmoticon = saved.emoticon; newFilterColor = saved.color;
+                newFilterAnimations = !saved.title_noanimate;
+                TextPaint paint = new TextPaint(Paint.ANTI_ALIAS_FLAG); paint.setTextSize(dp(17));
+                newFilterName = Emoji.replaceEmoji(new SpannableStringBuilder(saved.name), paint.getFontMetricsInt(), false);
+                newFilterName = MessageObject.replaceAnimatedEmoji(newFilterName, saved.entities, paint.getFontMetricsInt());
+                newAlwaysShow = new ArrayList<>(saved.alwaysShow); newNeverShow = new ArrayList<>(saved.neverShow); newPinned = saved.pinnedDialogs.clone();
+                if (onFinish != null) onFinish.run();
+            } catch (Exception error) { showAxSaveError("Изменения сохранены, но экран не удалось обновить. Откройте папку заново."); }
+        }, error -> {
+            dismissAxSaveProgress(progress);
+            if (request == axSaveGeneration && !isFinished)
+                showAxSaveError("Не удалось сохранить изменения папки. Черновик остаётся в редакторе. Повторное сохранение повторит незавершённые операции.");
+        });
+    }
+
+    private void dismissAxSaveProgress(AlertDialog progress) {
+        if (progress == null) return;
+        try { progress.dismiss(); }
+        catch (Exception error) { FileLog.e("AxGram folder progress: " + error.getClass().getSimpleName()); }
+    }
+
+    private void showAxSaveError(String message) {
+        if (getParentActivity() == null || isFinished) return;
+        showDialog(new AlertDialog.Builder(getParentActivity()).setTitle("Папки AxGram").setMessage(message)
+                .setPositiveButton(LocaleController.getString(R.string.OK), null).create());
+    }
+
     public static void saveFilterToServer(MessagesController.DialogFilter filter, int newFilterFlags, String newFilterEmoticon, String newFilterName, ArrayList<TLRPC.MessageEntity> newFilterNameEntities, boolean newFilterNoanimate, int newFilterColor, ArrayList<Long> newAlwaysShow, ArrayList<Long> newNeverShow, LongSparseIntArray newPinned, boolean creatingNew, boolean atBegin, boolean hasUserChanged, boolean resetUnreadCounter, boolean progress, BaseFragment fragment, Runnable onFinish) {
         if (fragment == null || fragment.getParentActivity() == null) {
             return;
@@ -1138,6 +1198,16 @@ public class FilterCreateActivity extends BaseFragment {
         // AxGram: локальная папка на сервер не отправляется — сервер о ней не знает
         // и отверг бы запрос лимитом. Сразу применяем изменения и пишем в базу.
         if (MessagesController.isLocalFilter(filter)) {
+            one.axgram.core.folders.AxFolderUiCoordinator coordinator = fragment.getMessagesController().getAxFolderUiCoordinator();
+            if (coordinator != null && fragment instanceof FilterCreateActivity) {
+                MessagesController.DialogFilter draft = new MessagesController.DialogFilter();
+                draft.id = filter.id; draft.axSyncUuid = filter.axSyncUuid;
+                draft.flags = newFilterFlags; draft.name = newFilterName; draft.entities = new ArrayList<>(newFilterNameEntities);
+                draft.title_noanimate = newFilterNoanimate; draft.emoticon = newFilterEmoticon; draft.color = newFilterColor;
+                draft.alwaysShow = new ArrayList<>(newAlwaysShow); draft.neverShow = new ArrayList<>(newNeverShow); draft.pinnedDialogs = newPinned.clone();
+                ((FilterCreateActivity) fragment).saveAxLocal(coordinator, draft, creatingNew, atBegin, progressDialog, onFinish);
+                return;
+            }
             if (progressDialog != null) {
                 try {
                     progressDialog.dismiss();
@@ -1145,6 +1215,7 @@ public class FilterCreateActivity extends BaseFragment {
                     FileLog.e(e);
                 }
             }
+            filter.pinnedDialogs = newPinned.clone();
             processAddFilter(filter, newFilterFlags, newFilterEmoticon, newFilterName,
                     newFilterNameEntities, newFilterNoanimate, newFilterColor, newAlwaysShow,
                     newNeverShow, creatingNew, atBegin, hasUserChanged, resetUnreadCounter,
@@ -1265,18 +1336,23 @@ public class FilterCreateActivity extends BaseFragment {
                     controller.removeFilter(filter);
                     fragment.getMessagesStorage().deleteDialogFilter(filter);
                 }
-                int localId = MessagesController.LOCAL_FILTER_MIN_ID;
-                while (controller.dialogFiltersById.get(localId) != null) {
-                    localId++;
-                }
+                int localId = controller.reserveAxLocalFilterId(filter);
+                if (fragment instanceof FilterCreateActivity)
+                    ((FilterCreateActivity) fragment).axDraftReservations = controller.getAxFolderReservations();
                 filter.id = localId;
                 FileLog.d("AxGram папки: сервер отказал, пересоздаю папку локальной с id=" + localId);
-                processAddFilter(filter, newFilterFlags, newFilterEmoticon, newFilterName, newFilterNameEntities, newFilterNoanimate, newFilterColor, newAlwaysShow, newNeverShow, true, atBegin, hasUserChanged, resetUnreadCounter, fragment, onFinish);
+                if (controller.getAxFolderUiCoordinator() != null && fragment instanceof FilterCreateActivity) {
+                    saveFilterToServer(filter, newFilterFlags, newFilterEmoticon, newFilterName, newFilterNameEntities, newFilterNoanimate,
+                            newFilterColor, newAlwaysShow, newNeverShow, newPinned, true, atBegin, hasUserChanged, resetUnreadCounter, true, fragment, onFinish);
+                } else {
+                    filter.pinnedDialogs = newPinned.clone();
+                    processAddFilter(filter, newFilterFlags, newFilterEmoticon, newFilterName, newFilterNameEntities, newFilterNoanimate, newFilterColor, newAlwaysShow, newNeverShow, true, atBegin, hasUserChanged, resetUnreadCounter, fragment, onFinish);
+                }
                 if (fragment.getParentActivity() != null) {
                     BulletinFactory.of(fragment).createSimpleBulletin(
                             R.raw.folder_in,
-                            "Папка создана только на этом устройстве",
-                            "На сервере Telegram больше папок не помещается").show();
+                            controller.getAxFolderUiCoordinator() == null ? "Папка создана только на этом устройстве" : "Дополнительная папка AxGram",
+                            controller.getAxFolderUiCoordinator() == null ? "На сервере Telegram больше папок не помещается" : "Лимит Telegram достигнут. Для папки используется синхронизация AxGram.").show();
                 }
                 return;
             }

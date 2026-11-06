@@ -8,7 +8,8 @@
 
 package org.telegram.ui;
 
-import static org.telegram.ui.Components.Premium.LimitReachedBottomSheet.TYPE_ACCOUNTS;
+import one.axgram.core.AxAccountLimitAlert;
+
 
 import android.animation.AnimatorSet;
 import android.app.Dialog;
@@ -42,7 +43,6 @@ import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Cells.TextSettingsCell;
 import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.LayoutHelper;
-import org.telegram.ui.Components.Premium.LimitReachedBottomSheet;
 import org.telegram.ui.Components.RecyclerListView;
 
 import java.util.ArrayList;
@@ -121,8 +121,7 @@ public class LogoutActivity extends BaseFragment {
                 if (availableAccount >= 0) {
                     presentFragment(new LoginActivity(availableAccount));
                 } else {
-                    LimitReachedBottomSheet limitReachedBottomSheet = new LimitReachedBottomSheet(this, getContext(), TYPE_ACCOUNTS, currentAccount, null);
-                    showDialog(limitReachedBottomSheet);
+                    AxAccountLimitAlert.show(this);
                 }
             } else if (position == passcodeRow) {
                 presentFragment(PasscodeActivity.determineOpenFragment());

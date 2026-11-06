@@ -607,7 +607,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
                 int statusBarHeight = AndroidUtilities.isTablet() ? 0 : AndroidUtilities.statusBarHeight;
                 marginLayoutParams = (MarginLayoutParams) backButtonView.getLayoutParams();
-                marginLayoutParams.topMargin = AndroidUtilities.dp(16) + statusBarHeight;
+                marginLayoutParams.topMargin = AndroidUtilities.dp(8) + statusBarHeight;
 
                 marginLayoutParams = (MarginLayoutParams) radialProgressView.getLayoutParams();
                 marginLayoutParams.topMargin = AndroidUtilities.dp(16) + statusBarHeight;
@@ -772,9 +772,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             }
         });
         backButtonView.setContentDescription(getString(R.string.AccDescrGoBack));
-        int padding = AndroidUtilities.dp(4);
+        int padding = AndroidUtilities.dp(12);
         backButtonView.setPadding(padding, padding, padding, padding);
-        sizeNotifierFrameLayout.addView(backButtonView, LayoutHelper.createFrame(32, 32, Gravity.LEFT | Gravity.TOP, 16, 16, 0, 0));
+        sizeNotifierFrameLayout.addView(backButtonView, LayoutHelper.createFrame(48, 48, Gravity.LEFT | Gravity.TOP, 8, 8, 0, 0));
 
         if (emailChangeSkipCallback != null && !emailChangeNonSkippable && emailChangeIsSuggestion) {
             emailChangeSkipButton = new TextView(context);
@@ -880,7 +880,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 }
             }
             if (currentViewNum == a) {
-                backButtonView.setVisibility(v.needBackButton() || newAccount || activityMode == MODE_CHANGE_PHONE_NUMBER ? View.VISIBLE : View.GONE);
+                backButtonView.setVisibility(hasBackNavigation() ? View.VISIBLE : View.GONE);
                 v.setVisibility(View.VISIBLE);
                 v.onShow();
 
@@ -1172,6 +1172,17 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             return false;
         }
 
+        // AxGram: the first phone page has a preceding welcome/appearance screen too.
+        // Adding accounts and account-management flows keep their existing return route.
+        if (currentViewNum == VIEW_PHONE_INPUT && !newAccount && activityMode == MODE_LOGIN) {
+            if (invoked) {
+                if (presentFragment(IntroActivity.forAppearanceSelection(), true)) {
+                    clearCurrentState();
+                }
+            }
+            return false;
+        }
+
         if (currentViewNum == VIEW_PHONE_INPUT || activityMode == MODE_CHANGE_LOGIN_EMAIL && currentViewNum == VIEW_ADD_EMAIL) {
             if (invoked) {
                 for (int a = 0; a < views.length; a++) {
@@ -1221,6 +1232,11 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             }
         }
         return false;
+    }
+
+    private boolean hasBackNavigation() {
+        // Telegram's mandatory email prompt already supplies its own allowed skip route.
+        return !(emailChangeIsSuggestion && currentViewNum == VIEW_ADD_EMAIL);
     }
 
     @Override
@@ -1611,7 +1627,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             final SlideView outView = views[currentViewNum];
             final SlideView newView = views[page];
             currentViewNum = page;
-            backButtonView.setVisibility(newView.needBackButton() || newAccount ? View.VISIBLE : View.GONE);
+            backButtonView.setVisibility(hasBackNavigation() ? View.VISIBLE : View.GONE);
 
             newView.setParams(params, false);
             setParentActivityTitle(newView.getHeaderName());
@@ -1640,10 +1656,10 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
             setCustomKeyboardVisible(newView.hasCustomKeyboard(), true);
         } else {
-            backButtonView.setVisibility(views[page].needBackButton() || newAccount ? View.VISIBLE : View.GONE);
             views[currentViewNum].setVisibility(View.GONE);
             views[currentViewNum].onHide();
             currentViewNum = page;
+            backButtonView.setVisibility(hasBackNavigation() ? View.VISIBLE : View.GONE);
             views[page].setParams(params, false);
             views[page].setVisibility(View.VISIBLE);
             setParentActivityTitle(views[page].getHeaderName());
@@ -8512,8 +8528,16 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         return null;
     }
 
+    private one.axgram.core.appearance.AxEntryBackgroundDrawable axEntryBackground;
     private void updateColors() {
-        fragmentView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+        if (one.axgram.core.appearance.AxAppearance.isGlassTheme()) {
+            if (axEntryBackground == null) axEntryBackground = new one.axgram.core.appearance.AxEntryBackgroundDrawable(fragmentView.getContext(), Theme.isCurrentThemeDark());
+            axEntryBackground.setDark(Theme.isCurrentThemeDark());
+            fragmentView.setBackground(axEntryBackground);
+            one.axgram.core.appearance.AxLoginTypography.apply(fragmentView);
+        } else {
+            fragmentView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+        }
 
         backButtonView.setColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
         backButtonView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector)));

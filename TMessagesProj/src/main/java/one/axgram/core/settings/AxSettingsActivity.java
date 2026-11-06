@@ -60,8 +60,10 @@ public class AxSettingsActivity extends BaseAxSettingsActivity {
 
     private int categoriesRow;
     private int generalRow;
+    private int appearanceRow;
     private int accountRow;
     private int chatRow;
+    private int folderSyncRow;
     private int passcodeRow;
     private int experimentRow;
     private int debugRow;
@@ -96,12 +98,16 @@ public class AxSettingsActivity extends BaseAxSettingsActivity {
 
     @Override
     protected void onItemClick(View view, int position, float x, float y) {
-        if (position == generalRow) {
+        if (position == appearanceRow) {
+            presentFragment(new AxAppearanceSettingsActivity());
+        } else if (position == generalRow) {
             presentFragment(new AxGeneralSettingsActivity());
         } else if (position == accountRow) {
             presentFragment(new AxAccountSettingsActivity());
         } else if (position == chatRow) {
             presentFragment(new AxChatSettingsActivity());
+        } else if (position == folderSyncRow) {
+            presentFragment(new AxFolderSyncSettingsActivity());
         } else if (position == passcodeRow) {
             presentFragment(new AxPasscodeSettingsActivity());
         } else if (position == experimentRow) {
@@ -162,9 +168,11 @@ public class AxSettingsActivity extends BaseAxSettingsActivity {
         super.updateRows();
 
         categoriesRow = addRow("categories");
+        appearanceRow = addRow("appearance");
         generalRow = addRow("general");
         accountRow = addRow("account");
         chatRow = addRow("chat");
+        folderSyncRow = addRow("folderSync");
         if (!PasscodeHelper.isSettingsHidden()) {
             passcodeRow = addRow("passcode");
         } else {
@@ -238,12 +246,16 @@ public class AxSettingsActivity extends BaseAxSettingsActivity {
                 }
                 case TYPE_TEXT: {
                     TextCell textCell = (TextCell) holder.itemView;
-                    if (position == generalRow) {
+                    if (position == appearanceRow) {
+                        textCell.setTextAndIcon(LocaleController.getString(R.string.AxAppearance), R.drawable.settings_chat, divider);
+                    } else if (position == generalRow) {
                         textCell.setTextAndIcon(LocaleController.getString(R.string.General), R.drawable.msg_media, divider);
                     } else if (position == accountRow) {
                         textCell.setTextAndIcon(LocaleController.getString(R.string.Account), R.drawable.msg_contacts, divider);
                     } else if (position == chatRow) {
                         textCell.setTextAndIcon(LocaleController.getString(R.string.Chat), R.drawable.msg_discussion, divider);
+                    } else if (position == folderSyncRow) {
+                        textCell.setTextAndIcon("Синхронизация папок", R.drawable.msg_folders, divider);
                     } else if (position == passcodeRow) {
                         textCell.setTextAndIcon(LocaleController.getString(R.string.PasscodeAx), R.drawable.msg_secret, divider);
                     } else if (position == experimentRow) {
@@ -362,6 +374,7 @@ public class AxSettingsActivity extends BaseAxSettingsActivity {
 
         spToJSON("mainconfig", configJson, mainconfig::contains);
         spToJSON("themeconfig", configJson, null);
+        spToJSON("axgram_appearance", configJson, null);
 
         spToJSON("nkmrcfg", configJson, key -> shouldTransferPreference("nkmrcfg", key));
         spToJSON("nekodialogconfig", configJson, null);

@@ -320,11 +320,6 @@ public class DoubledLimitsBottomSheet extends BottomSheetWithRecyclerListView im
                     messagesController.dialogFiltersChatsLimitDefault, messagesController.dialogFiltersChatsLimitPremium
             ));
             limits.add(new Limit(
-                    LocaleController.getString(R.string.ConnectedAccountsLimitTitle),
-                    LocaleController.formatString(R.string.ConnectedAccountsLimitSubtitle, 4),
-                    16, 4
-            ));
-            limits.add(new Limit(
                     LocaleController.getString(R.string.SimilarChannelsLimitTitle),
                     LocaleController.formatString(R.string.SimilarChannelsLimitSubtitle, messagesController.recommendedChannelsLimitPremium),
                     messagesController.recommendedChannelsLimitDefault, messagesController.recommendedChannelsLimitPremium

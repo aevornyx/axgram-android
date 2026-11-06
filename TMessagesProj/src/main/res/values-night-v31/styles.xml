@@ -5,8 +5,8 @@
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:actionBarStyle">@style/ActionBar.Transparent.TMessages.Start</item>
-        <item name="android:colorBackground">#1f2732</item>
-        <item name="android:windowBackground">#1f2732</item>
+        <item name="android:colorBackground">@color/ax_splash_surface</item>
+        <item name="android:windowBackground">@color/ax_splash_surface</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:colorPrimaryDark">#1c242e</item>
         <item name="android:colorPrimary">#232d3a</item>

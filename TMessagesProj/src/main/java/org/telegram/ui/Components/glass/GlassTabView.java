@@ -105,8 +105,32 @@ public class GlassTabView extends FrameLayout implements MainTabsLayout.Tab, Fac
         counter.setTextSize(dp(10));
     }
 
+    private boolean axGlassEnabled;
+
+    public void setAxGlassEnabled(boolean enabled) {
+        axGlassEnabled = enabled;
+        setClipChildren(!enabled);
+        setClipToPadding(!enabled);
+        textView.setTypeface(enabled ? AndroidUtilities.getTypeface("fonts/axgram_onest.ttf")
+                : isSelectedAnimator.getValue() ? AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_EXTRA_BOLD) : AndroidUtilities.bold());
+        if (!enabled) {
+            imageView.setTranslationY(0);
+            imageView.setScaleX(1);
+            imageView.setScaleY(1);
+            if (backupImageView != null) {
+                backupImageView.setTranslationY(0);
+                backupImageView.setScaleX(1);
+                backupImageView.setScaleY(1);
+            }
+        }
+        invalidate();
+    }
+
     private boolean hasVisualWidth;
     private float visualWidth;
+    public float getVisualCenterX() {
+        return getX() + (hasVisualWidth ? visualWidth : getWidth()) / 2f;
+    }
     public void setVisualWidth(float width) {
         hasVisualWidth = true;
         if (visualWidth != width) {
@@ -153,7 +177,19 @@ public class GlassTabView extends FrameLayout implements MainTabsLayout.Tab, Fac
     protected void dispatchDraw(@NonNull Canvas canvas) {
         final float viewWidth = hasVisualWidth ? visualWidth : getWidth();
         final float selectedFactor = hasGestureSelectedOverride ? gestureSelectedOverride : isSelectedAnimator.getFloatValue();
-        if (selectedFactor > 0 && !skipDrawSelector) {
+        if (axGlassEnabled) {
+            float lift = -dp(14) * selectedFactor;
+            float scale = 1f + .08f * selectedFactor;
+            imageView.setTranslationY(lift);
+            imageView.setScaleX(scale);
+            imageView.setScaleY(scale);
+            if (backupImageView != null) {
+                backupImageView.setTranslationY(lift);
+                backupImageView.setScaleX(scale);
+                backupImageView.setScaleY(scale);
+            }
+        }
+        if (selectedFactor > 0 && !skipDrawSelector && !axGlassEnabled) {
             final float alpha = AnimatorUtils.DECELERATE_INTERPOLATOR.getInterpolation(selectedFactor);
 
             paintCounterBackground.setColor(Theme.multAlpha(colorSelected, 0.09f * alpha));
@@ -169,7 +205,7 @@ public class GlassTabView extends FrameLayout implements MainTabsLayout.Tab, Fac
         final float hasCounter = (usePremiumCounter ? 1f : isHasCounterAnimator.getFloatValue()) * attachScale;
         final boolean saveLayer = hasCounter > 0;
         if (saveLayer) {
-            canvas.saveLayer(0, 0, viewWidth, getHeight(), null);
+            canvas.saveLayer(0, axGlassEnabled ? -dp(14) : 0, viewWidth, getHeight(), null);
         }
 
         super.dispatchDraw(canvas);
@@ -179,7 +215,7 @@ public class GlassTabView extends FrameLayout implements MainTabsLayout.Tab, Fac
 
             final float gap = dpf2(1.33f);
             final float cx = viewWidth / 2f + dpf2(11);
-            final float cy = dpf2(10);
+            final float cy = dpf2(10) - (axGlassEnabled ? dp(14) * selectedFactor : 0);
             final float height = dpf2(16);
             final float width = Math.max(height, counter.getCurrentWidth() + dp(8));
             final float rOuter = dpf2(9.333f);
@@ -236,7 +272,8 @@ public class GlassTabView extends FrameLayout implements MainTabsLayout.Tab, Fac
         isSelectedAnimator.setValue(selected, animated);
         checkPlayAnimation(animated);
 
-        textView.setTypeface(selected ? AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_EXTRA_BOLD) : AndroidUtilities.bold());
+        textView.setTypeface(axGlassEnabled ? AndroidUtilities.getTypeface("fonts/axgram_onest.ttf")
+                : selected ? AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_EXTRA_BOLD) : AndroidUtilities.bold());
     }
 
     public boolean isTabSelected() {
@@ -415,6 +452,7 @@ public class GlassTabView extends FrameLayout implements MainTabsLayout.Tab, Fac
 
     public static GlassTabView createAvatar(Context context, Theme.ResourcesProvider resourcesProvider, int currentAccount, @StringRes int stringRes) {
         GlassTabView tab = new GlassTabView(context);
+        tab.resourcesProvider = resourcesProvider;
         tab.textView.setText(LocaleController.getString(stringRes));
         tab.imageView.setVisibility(GONE);
 

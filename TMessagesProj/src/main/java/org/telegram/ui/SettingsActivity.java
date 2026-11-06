@@ -157,6 +157,7 @@ import one.axgram.core.AxCoreConfig;
 import one.axgram.core.AxLegacyConfig;
 import one.axgram.core.helpers.PasscodeHelper;
 import one.axgram.core.settings.AxSettingsActivity;
+import one.axgram.core.settings.AxAppearanceSettingsActivity;
 import one.axgram.core.utils.AlertUtil;
 import one.axgram.extra.AxConfig;
 import one.axgram.extra.ui.ItemOptionsPatch;
@@ -714,9 +715,14 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             }
         }
 
+        items.add(UItem.asHeader(getString(R.string.AxAppearance)));
+        items.add(SettingCell.Factory.of(101, 0xFF78ACD6, 0xFF5593C7, R.drawable.settings_chat, getString(R.string.AxAppearanceThemesIcons)));
+        items.add(UItem.asShadow(null));
+        items.add(UItem.asHeader(getString(R.string.AxSettingsFunctions)));
         items.add(SettingCell.Factory.of(100, 0xFF1BA4ED, 0xFF1488E1, R.drawable.msg_settings, getString(R.string.AxSettings)));
         items.add(UItem.asShadow(null));
 
+        items.add(UItem.asHeader(getString(R.string.AxSettingsTelegram)));
         items.add(SettingCell.Factory.of(1, IconBackgroundColors.BLUE.top, IconBackgroundColors.BLUE.bottom, R.drawable.settings_account, getString(R.string.SettingsAccount), getString(R.string.SettingsAccountInfo)));
         items.add(SettingCell.Factory.of(2, IconBackgroundColors.ORANGE.top, IconBackgroundColors.ORANGE.bottom, R.drawable.settings_chat, getString(R.string.SettingsChat), getString(R.string.SettingsChatInfo)));
         items.add(SettingCell.Factory.of(3, IconBackgroundColors.GREEN.top, IconBackgroundColors.GREEN.bottom, R.drawable.settings_privacy, getString(R.string.SettingsPrivacySecurity), getString(R.string.SettingsPrivacySecurityInfo)));
@@ -911,6 +917,10 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 } else {
                     Browser.openUrl(getContext(), LocaleController.getString(R.string.TelegramFeaturesUrl));
                 }
+                break;
+            }
+            case 101: {
+                presentFragment(new AxAppearanceSettingsActivity());
                 break;
             }
             case 100: {
@@ -1168,7 +1178,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             iconLayout = new FrameLayout(context);
             iconLayout.setBackground(iconBackground = new Background());
 
-            iconView = new ImageView(context);
+            iconView = new ImageView(context) { @Override public void invalidateDrawable(Drawable drawable) { super.invalidateDrawable(drawable); iconLayout.invalidate(); } };
             iconView.setScaleType(ImageView.ScaleType.FIT_CENTER);
             iconLayout.addView(iconView, LayoutHelper.createFrame(24, 24, Gravity.CENTER));
 
@@ -1218,7 +1228,8 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             subtitleView.setTranslationX(icon == 0 ? dp(2) : 0);
 
             iconBackground.setColor(iconColorTop, iconColorBottom);
-            iconView.setImageResource(icon);
+            iconBackground.decorated = one.axgram.core.appearance.AxIconPack.hasIcon(icon);
+            iconView.setImageDrawable(icon == 0 ? null : one.axgram.core.appearance.AxIconPack.badge(getContext(), icon));
             titleView.setText(title);
             subtitleView.setVisibility((twoLines = !TextUtils.isEmpty(subtitle)) ? View.VISIBLE : View.GONE);
             subtitleView.setText(subtitle);
@@ -1239,6 +1250,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         }
 
         public static class Background extends Drawable {
+            boolean decorated;
             private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
             private final Paint strokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             private LinearGradient gradient, strokeGradient;
@@ -1262,6 +1274,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
 
             @Override
             public void draw(@NonNull Canvas canvas) {
+                if (decorated && one.axgram.core.appearance.AxIconPack.enabled()) return;
                 final float r = dp(10);
                 AndroidUtilities.rectTmp.set(getBounds());
                 matrix.reset();

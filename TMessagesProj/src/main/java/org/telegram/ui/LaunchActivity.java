@@ -442,6 +442,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
 
         instance = this;
         ApplicationLoader.postInitApplication();
+        one.axgram.core.appearance.AxAppearance.initializeForNewProfile();
         AndroidUtilities.checkDisplaySize(this, getResources().getConfiguration());
         currentAccount = UserConfig.selectedAccount;
         registerReceiver(batteryReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
@@ -6909,6 +6910,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         pipActivityHandler.onPause();
         NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.stopAllHeavyOperations, 4096);
         ApplicationLoader.mainInterfacePaused = true;
+        one.axgram.core.folders.AxFolderSession.foregroundChanged(false);
         int account = currentAccount;
         Utilities.stageQueue.postRunnable(() -> {
             ApplicationLoader.mainInterfacePausedStageQueue = true;
@@ -7158,6 +7160,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.startAllHeavyOperations, 4096);
         MediaController.getInstance().setFeedbackView(feedbackView = actionBarLayout.getView(), true);
         ApplicationLoader.mainInterfacePaused = false;
+        one.axgram.core.folders.AxFolderSession.foregroundChanged(true);
         MessagesController.getInstance(currentAccount).sortDialogs(null);
         showLanguageAlert(false);
         Utilities.stageQueue.postRunnable(() -> {

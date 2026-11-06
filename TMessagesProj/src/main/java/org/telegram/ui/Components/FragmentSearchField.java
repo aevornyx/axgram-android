@@ -179,11 +179,23 @@ public class FragmentSearchField extends FrameLayout implements FactorAnimator.T
     }
 
     private Drawable bg;
+    private boolean axGlassEligible;
+    private android.graphics.Typeface axOriginalTypeface;
+    private final one.axgram.core.appearance.AxChatListSurface axSurface = new one.axgram.core.appearance.AxChatListSurface();
+
+    public void setAxGlassStyle(boolean eligible) {
+        axGlassEligible = eligible;
+        if (axOriginalTypeface == null) axOriginalTypeface = editText.getTypeface();
+        updateColors();
+    }
 
     @Override
     protected void dispatchDraw(@NonNull Canvas canvas) {
         canvas.save();
-        if (bg != null) {
+        boolean axGlass = axGlassEligible && one.axgram.core.appearance.AxAppearance.isGlassTheme();
+        if (axGlass) {
+            axSurface.draw(canvas, getPaddingLeft(), getPaddingTop(), getWidth() - getPaddingRight(), getHeight() - getPaddingBottom(), dp(20), false);
+        } else if (bg != null) {
             bg.setBounds(
                 getPaddingLeft(),
                 getPaddingTop(),
@@ -201,6 +213,7 @@ public class FragmentSearchField extends FrameLayout implements FactorAnimator.T
             blurredBackgroundDrawable.draw(canvas);
         }
         super.dispatchDraw(canvas);
+        if (axGlass) axSurface.drawEdge(canvas, getPaddingLeft(), getPaddingTop(), getWidth() - getPaddingRight(), getHeight() - getPaddingBottom(), dp(20));
         canvas.restore();
     }
 
@@ -269,6 +282,8 @@ public class FragmentSearchField extends FrameLayout implements FactorAnimator.T
 
     @Override
     public void updateColors() {
+        if (axGlassEligible) editText.setTypeface(one.axgram.core.appearance.AxAppearance.isGlassTheme()
+                ? one.axgram.core.appearance.AxChatListStyle.font(400) : axOriginalTypeface);
         final boolean isDark = resourcesProvider != null ? resourcesProvider.isDark() : Theme.isCurrentThemeDark();
         bg = isSectionBackground ?
             Theme.createRoundRectDrawableShadowed(dp(20), getThemedColor(Theme.key_windowBackgroundWhite)) :

@@ -447,6 +447,8 @@ public class MessagePreviewParams {
             message.date = messageObject.messageOwner.date;
         }
         message.id = messageObject.messageOwner.id;
+        message.attachPath = messageObject.messageOwner.attachPath;
+        message.dialog_id = messageObject.messageOwner.dialog_id;
         message.grouped_id = messageObject.messageOwner.grouped_id;
         message.peer_id = messageObject.messageOwner.peer_id;
         message.from_id = messageObject.messageOwner.from_id;
@@ -532,6 +534,7 @@ public class MessagePreviewParams {
                 return super.needDrawForwarded();
             }
         };
+        previewMessage.axDeleted = messageObject.axDeleted;
         previewMessage.previewForward = msgtype == 0;
 //        previewMessage.forceAvatar = msgtype == 1 && !message.out;
         previewMessage.preview = true;

@@ -117,7 +117,7 @@ public class TextDetailSettingsCell extends FrameLayout {
     public void setTextAndValueAndIcon(String text, CharSequence value, int resId, boolean divider) {
         textView.setText(text);
         valueTextView.setText(value);
-        imageView.setImageResource(resId);
+        one.axgram.core.appearance.AxIconPack.bind(imageView, resId);
         imageView.setVisibility(VISIBLE);
         textView.setPadding(LocaleController.isRTL ? 0 : AndroidUtilities.dp(50), 0, LocaleController.isRTL ? AndroidUtilities.dp(50) : 0, 0);
         valueTextView.setPadding(LocaleController.isRTL ? 0 : AndroidUtilities.dp(50), 0, LocaleController.isRTL ? AndroidUtilities.dp(50) : 0, multiline ? AndroidUtilities.dp(12) : 0);

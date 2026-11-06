@@ -450,6 +450,7 @@ public class ChatActivity extends BaseFragment implements
     public final static int nkbtn_sharemessage = 2030;
 
     // chat click menu buttons
+    public final static int nkbtn_ax_edits = 2098;
     public final static int nkbtn_detail = 2012;
     public final static int nkbtn_deldlcache = 2013;
     public final static int nkbtn_view_history = 2014;
@@ -3850,8 +3851,17 @@ public class ChatActivity extends BaseFragment implements
         Timer t = Timer.create("ChatActivity.createView");
 
         blurredBackgroundColorProvider = new BlurredBackgroundColorProviderThemed(themeDelegate, Theme.key_chat_messagePanelBackground) {
+            @Override public boolean usesAxAppearanceControls() {
+                return !one.axgram.core.appearance.AxAppearance.glassBlurEnabled()
+                        || BlurredBackgroundProviderImpl.checkBlurEnabled(currentAccount, themeDelegate);
+            }
             @Override
             public int getBackgroundColor() {
+                if (one.axgram.core.appearance.AxAppearance.isGlassTheme()) {
+                    int color = one.axgram.core.appearance.AxFolderTabsStyle.panelColor(themeDelegate);
+                    return BlurredBackgroundProviderImpl.checkBlurEnabled(currentAccount, themeDelegate)
+                            ? color : ColorUtils.setAlphaComponent(color, 255);
+                }
                 if (!BlurredBackgroundProviderImpl.checkBlurEnabled(currentAccount, themeDelegate)) {
                     return ColorUtils.setAlphaComponent(getThemedColor(Theme.key_chat_messagePanelBackground), 255);
                 }
@@ -3864,8 +3874,17 @@ public class ChatActivity extends BaseFragment implements
             }
         };
         blurredBackgroundColorProviderWhite = new BlurredBackgroundColorProviderThemed(themeDelegate, Theme.key_windowBackgroundWhite) {
+            @Override public boolean usesAxAppearanceControls() {
+                return !one.axgram.core.appearance.AxAppearance.glassBlurEnabled()
+                        || BlurredBackgroundProviderImpl.checkBlurEnabled(currentAccount, themeDelegate);
+            }
             @Override
             public int getBackgroundColor() {
+                if (one.axgram.core.appearance.AxAppearance.isGlassTheme()) {
+                    int color = one.axgram.core.appearance.AxFolderTabsStyle.panelColor(themeDelegate);
+                    return BlurredBackgroundProviderImpl.checkBlurEnabled(currentAccount, themeDelegate)
+                            ? color : ColorUtils.setAlphaComponent(color, 255);
+                }
                 if (!BlurredBackgroundProviderImpl.checkBlurEnabled(currentAccount, themeDelegate)) {
                     return ColorUtils.setAlphaComponent(getThemedColor(Theme.key_windowBackgroundWhite), 255);
                 }
@@ -10802,6 +10821,9 @@ public class ChatActivity extends BaseFragment implements
 
         actionModeViews.add(actionMode.addItemWithWidth(delete, R.drawable.msg_delete, dp(48), LocaleController.getString(R.string.Delete)));
         actionModeViews.add(actionModeOtherItem = actionMode.addItemWithWidth(nkactionbarbtn_action_mode_other, R.drawable.ic_ab_other, dp(48), LocaleController.getString(R.string.MessageMenu)));
+        if (currentEncryptedChat == null && (chatMode == MODE_DEFAULT || chatMode == MODE_SAVED)) {
+            actionModeOtherItem.addSubItem(nkbtn_ax_edits, R.drawable.msg_recent, "История изменений");
+        }
 
         boolean noforward = getMessagesController().isChatNoForwards(currentChat);
 
@@ -17833,6 +17855,7 @@ public class ChatActivity extends BaseFragment implements
     }
 
     public class ChatActivityFragmentView extends SizeNotifierFrameLayout {
+        @Override protected boolean useAxWallpaperEffects() { return true; }
 
         public ChatActivity getChatActivity() {
             return ChatActivity.this;
@@ -20276,6 +20299,12 @@ public class ChatActivity extends BaseFragment implements
     }
 
     private void updateActionModeTitle() {
+        if (actionModeOtherItem != null) {
+            ArrayList<MessageObject> selected = getSelectedMessages1();
+            boolean showHistory = selected.size() == 1 && selected.get(0).getId() > 0
+                    && selected.get(0).messageOwner instanceof TLRPC.TL_message;
+            actionModeOtherItem.setSubItemVisibility(nkbtn_ax_edits, showHistory);
+        }
         if (!isReport()) {
             if (!actionBar.isActionModeShowed()) {
                 return;
@@ -21464,7 +21493,7 @@ public class ChatActivity extends BaseFragment implements
         // across chat re-entry (until app restart), rendered inline with full media. ===
         try {
             if (dialog_id != 0 && !messArr.isEmpty()) {
-                ArrayList<MessageObject> axCached = one.axgram.core.AxDeletedMessages.getCachedDeleted(dialog_id);
+                ArrayList<MessageObject> axCached = one.axgram.core.AxDeletedMessages.getCachedDeleted(currentAccount, dialog_id);
                 if (axCached.isEmpty()) {
                     // Not in session cache yet → load persisted deleted messages from DB and
                     // reconstruct them (so they survive app restart, shown inline with media).
@@ -21473,11 +21502,12 @@ public class ChatActivity extends BaseFragment implements
                         try {
                             MessageObject axMo = new MessageObject(currentAccount, axDb.get(di), true, true);
                             axMo.axDeleted = true;
-                            one.axgram.core.AxDeletedMessages.cacheDeleted(dialog_id, axMo);
+                            axMo.checkMediaExistance();
+                            one.axgram.core.AxDeletedMessages.cacheDeleted(currentAccount, dialog_id, axMo);
                         } catch (Throwable ignore) {
                         }
                     }
-                    axCached = one.axgram.core.AxDeletedMessages.getCachedDeleted(dialog_id);
+                    axCached = one.axgram.core.AxDeletedMessages.getCachedDeleted(currentAccount, dialog_id);
                 }
                 if (!axCached.isEmpty()) {
                     int axMinId = Integer.MAX_VALUE;
@@ -27303,12 +27333,12 @@ public class ChatActivity extends BaseFragment implements
                         // Само гашение делается ниже, одним проходом по видимым
                         // ячейкам — по отдельности не годится, кружки висят на всех.
                         axNeedClearSelection = true;
-                        one.axgram.core.AxDeletedMessages.cacheDeleted(dialog_id, mo); // keep across chat re-entry (session)
+                        one.axgram.core.AxDeletedMessages.cacheDeleted(currentAccount, dialog_id, mo); // keep across chat re-entry (session)
                         axKeep.add(markAsDeletedMessages.get(i));
                         axKeptObjects.add(mo);
                     } else if (mo != null && mo.axDeleted) {
                         // second delete of an already-kept message → remove it for real (session + DB)
-                        one.axgram.core.AxDeletedMessages.uncacheDeleted(dialog_id, mo.getId());
+                        one.axgram.core.AxDeletedMessages.uncacheDeleted(currentAccount, dialog_id, mo.getId());
                         one.axgram.core.AxDeletedMessages.getInstance().deleteOne(currentAccount, dialog_id, mo.getId());
                     }
                 }
@@ -46058,6 +46088,12 @@ public class ChatActivity extends BaseFragment implements
                 }
             }
             hideTitleItem.setVisibility(android.view.View.GONE);
+        } else if (id == nkbtn_ax_edits) {
+            ArrayList<MessageObject> selected = getSelectedMessages1();
+            if (selected.size() == 1) {
+                presentFragment(new one.axgram.core.AxMessageHistoryActivity(selected.get(0)));
+                clearSelectionMode();
+            }
         } else if (id == nkbtn_detail) {
             presentFragment(new MessageDetailsActivity(getSelectedMessages().get(0)));
         } else if (id == nkbtn_sharemessage) {
@@ -46270,6 +46306,10 @@ public class ChatActivity extends BaseFragment implements
             }
             case nkbtn_translate: {
                 nkbtn_translate(selectedObject, selectedObjectGroup);
+                break;
+            }
+            case nkbtn_ax_edits: {
+                presentFragment(new one.axgram.core.AxMessageHistoryActivity(selectedObject));
                 break;
             }
             case nkbtn_detail: {
@@ -49045,6 +49085,14 @@ public class ChatActivity extends BaseFragment implements
                     }
                 }
             }
+        }
+
+        if ((chatMode == MODE_DEFAULT || chatMode == MODE_SAVED) && primaryMessage != null && primaryMessage.getId() > 0
+                && currentEncryptedChat == null && !primaryMessage.isSponsored()
+                && primaryMessage.messageOwner instanceof TLRPC.TL_message) {
+            items.add("История изменений");
+            options.add(nkbtn_ax_edits);
+            icons.add(R.drawable.msg_recent);
         }
 
         if (showWelcomeMessageRevertOption(primaryMessage)) {

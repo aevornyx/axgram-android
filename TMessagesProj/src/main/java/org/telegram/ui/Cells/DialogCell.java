@@ -4961,16 +4961,18 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
 
             if (rightFragmentOpenedProgress != 1) {
                 int alpha = Theme.dividerPaint.getAlpha();
+                boolean axGlassDivider = one.axgram.core.appearance.AxAppearance.isGlassTheme();
                 if (rightFragmentOpenedProgress != 0) {
                     Theme.dividerPaint.setAlpha((int) (alpha * (1f - rightFragmentOpenedProgress)));
                 }
+                if (axGlassDivider) Theme.dividerPaint.setAlpha(Math.round(Theme.dividerPaint.getAlpha() * .55f));
                 float y = getMeasuredHeight() - 1 - rightFragmentOffset * rightFragmentOpenedProgress;
                 if (LocaleController.isRTL) {
                     canvas.drawLine(0, y, getMeasuredWidth() - left, y, Theme.dividerPaint);
                 } else {
                     canvas.drawLine(left, y, getMeasuredWidth(), y, Theme.dividerPaint);
                 }
-                if (rightFragmentOpenedProgress != 0) {
+                if (rightFragmentOpenedProgress != 0 || axGlassDivider) {
                     Theme.dividerPaint.setAlpha(alpha);
                 }
             }

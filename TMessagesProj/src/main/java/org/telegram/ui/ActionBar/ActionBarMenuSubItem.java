@@ -178,7 +178,7 @@ public class ActionBarMenuSubItem extends FrameLayout {
             rightIcon.setVisibility(View.GONE);
         } else {
             rightIcon.setVisibility(View.VISIBLE);
-            rightIcon.setImageResource(icon);
+            one.axgram.core.appearance.AxIconPack.bind(rightIcon, icon);
         }
     }
 
@@ -211,7 +211,7 @@ public class ActionBarMenuSubItem extends FrameLayout {
                 imageView.setImageDrawable(iconDrawable);
             } else {
                 iconResId = icon;
-                imageView.setImageResource(icon);
+                one.axgram.core.appearance.AxIconPack.bind(imageView, icon);
             }
             imageView.setVisibility(VISIBLE);
             textView.setPadding(checkViewLeft ? (checkView != null ? dp(43) : 0) : dp(icon != 0 || iconDrawable != null ? 43 : 0), 0, checkViewLeft ? dp(icon != 0 || iconDrawable != null ? 43 : 0) : (checkView != null ? dp(43) : 0), 0);
@@ -324,7 +324,7 @@ public class ActionBarMenuSubItem extends FrameLayout {
     }
 
     public void setIcon(int resId) {
-        imageView.setImageResource(iconResId = resId);
+        one.axgram.core.appearance.AxIconPack.bind(imageView, iconResId = resId);
     }
 
     public void setIcon(Drawable drawable) {

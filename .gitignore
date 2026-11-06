@@ -33,3 +33,12 @@ TMessagesProj/jni/ffmpeg/build_android
 # APK, который система примет как обновление твоего приложения.
 *.keystore
 *.jks
+
+# Private deployment and signing material.
+.env.*
+!.env.example
+!.env.*.example
+*.p12
+*.pfx
+*.session
+.env

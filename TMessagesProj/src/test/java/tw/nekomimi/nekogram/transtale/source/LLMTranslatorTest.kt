@@ -1,5 +1,6 @@
 package tw.nekomimi.nekogram.transtale.source
 
+import one.axgram.core.transtale.source.LLMTranslator
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive

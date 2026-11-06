@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="AxAppearance">Оформление</string>
+    <string name="AxAppearanceLight">Светлое стекло</string>
+    <string name="AxAppearanceDark">Тёмное стекло</string>
+    <string name="AxAppearanceSystem">Как в системе</string>
+    <string name="AxAppearanceNavigation">Стеклянная панель</string>
+    <string name="AxAppearanceInfo">Прежние темы и настройки Telegram остаются доступны. Вы можете вернуться к своему оформлению.</string>
+    <string name="AxAppearanceRestore">Вернуть прежнее оформление</string>
+    <string name="AxAppearanceTelegram">Все настройки тем Telegram</string>
+    <string name="AxAppearanceAccent">Акцентный оттенок</string>
+    <string name="AxAppearanceGlassBlur">Размытие под панелями</string>
+    <string name="AxAppearanceTransparency">Прозрачность панелей</string>
+    <string name="AxAppearanceWallpaperBlur">Размытие обоев</string>
+    <string name="AxAppearanceResetStyle">Сбросить эффекты и оттенок</string>
+    <string name="AxAppearanceDefault">Стандартный</string>
+    <string name="AxAppearanceEffectsInfo">Эффекты действуют в темах AxGram Glass. Размытие обоев не зависит от размытия панелей и не затрагивает сообщения и медиа. Прозрачность: 0% — сплошной фон, 80% — прозрачное стекло.</string>
+    <string name="AxAppearanceApply">Применить</string>
+    <string name="AxAppearanceListWallpaper">Обои в списке чатов</string>
+    <string name="AxAppearanceIcons">Иконки AxGram</string>
+    <string name="AxAppearanceThemesIcons">Темы, обои и иконки</string>
+    <string name="AxSettingsFunctions">Функции AxGram</string>
+    <string name="AxSettingsTelegram">Настройки Telegram</string>
+</resources>

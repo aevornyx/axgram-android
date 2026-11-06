@@ -8,6 +8,8 @@
 
 package org.telegram.ui;
 
+import one.axgram.core.AxAccountLimitAlert;
+
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.AndroidUtilities.dpf2;
 import static org.telegram.messenger.AndroidUtilities.ilerp;
@@ -2585,7 +2587,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             actionBar.setBackButtonDrawable(new BackDrawable(false));
             actionBar.getBackButton().setTranslationX(dp(2));
             actionBar.backButtonImageView.setContentDescription(getString(R.string.QrCode));
-            actionBar.backButtonImageView.setImageResource(R.drawable.outline_header_qr_24);
+            one.axgram.core.appearance.AxIconPack.bind(actionBar.backButtonImageView, R.drawable.outline_header_qr_24);
             actionBar.backButtonImageView.setColorFilter(getThemedColor(Theme.key_actionBarDefaultIcon), PorterDuff.Mode.SRC_IN);
             actionBar.backButtonImageView.setOnClickListener(v -> {
                 Bundle args = new Bundle();
@@ -4182,7 +4184,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         ttlIconView = new ImageView(context);
         ttlIconView.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_actionBarDefaultIcon), PorterDuff.Mode.MULTIPLY));
         AndroidUtilities.updateViewVisibilityAnimated(ttlIconView, false, 0.8f, false);
-        ttlIconView.setImageResource(R.drawable.msg_mini_autodelete_timer);
+        one.axgram.core.appearance.AxIconPack.bind(ttlIconView, R.drawable.msg_mini_autodelete_timer);
         otherItem.addView(ttlIconView, LayoutHelper.createFrame(12, 12, Gravity.CENTER_VERTICAL | Gravity.LEFT, 8, 2, 0, 0));
         otherItem.setContentDescription(LocaleController.getString(R.string.AccDescrMoreOptions));
         otherItem.setBlurredBackgroundFactory(scrimBlur3Factory, BlurredBackgroundProviderImpl.messageMenuBackground(resourceProvider));
@@ -6056,15 +6058,15 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 if (actionsView != null) {
                     actionsView.set(ProfileActionsView.KEY_MESSAGE, true);
                 }
-                writeButton.setImageResource(R.drawable.profile_newmsg);
+                one.axgram.core.appearance.AxIconPack.bind(writeButton, R.drawable.profile_newmsg);
                 writeButton.setContentDescription(LocaleController.getString(R.string.AccDescrOpenChat));
             }
         } else {
             if (currentChat.megagroup) {
-                writeButton.setImageResource(R.drawable.msg_channel);
+                one.axgram.core.appearance.AxIconPack.bind(writeButton, R.drawable.msg_channel);
                 writeButton.setContentDescription(LocaleController.getString(R.string.OpenChannel2));
             } else {
-                writeButton.setImageResource(R.drawable.profile_discuss);
+                one.axgram.core.appearance.AxIconPack.bind(writeButton, R.drawable.profile_discuss);
                 writeButton.setContentDescription(LocaleController.getString(R.string.ViewDiscussion));
             }
         }
@@ -6256,7 +6258,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         if (actionsView != null && actionsView.hasCall()) {
             callToActionItem = new ImageView(context);
             callToActionItem.setScaleType(ImageView.ScaleType.CENTER);
-            callToActionItem.setImageResource(R.drawable.call);
+            one.axgram.core.appearance.AxIconPack.bind(callToActionItem, R.drawable.call);
             callToActionItem.setVisibility(View.GONE);
 
             FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
@@ -15214,7 +15216,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         if (availableAccount >= 0) {
                             f.presentFragment(new LoginActivity(availableAccount));
                         } else {
-                            f.showDialog(new LimitReachedBottomSheet(f, f.getContext(), LimitReachedBottomSheet.TYPE_ACCOUNTS, currentAccount, null));
+                            AxAccountLimitAlert.show(f);
                         }
                     }).withLink("tg://settings/edit/add-account"),
                     // TODO:

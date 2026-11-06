@@ -176,6 +176,9 @@ public class FilterTabsView extends FrameLayout {
             }
             width += counterResultWidth;
 
+            if (one.axgram.core.appearance.AxAppearance.isGlassTheme()) {
+                width = Math.max(width, one.axgram.core.appearance.AxFolderTabsStyle.minimumContentWidth(axViewportWidth, tabs.size(), FolderIconHelper.getPaddingTab()));
+            }
             return Math.max(dp(16), width);
         }
 
@@ -558,6 +561,9 @@ public class FilterTabsView extends FrameLayout {
                     x = textX + titleWidth + textSpace;
                 }
                 int countTop = (getMeasuredHeight() - dp(TAB_COUNTER_HEIGHT)) / 2;
+                if (one.axgram.core.appearance.AxAppearance.isGlassTheme()) {
+                    textCounterPaint.setColor(one.axgram.core.appearance.AxAppearanceColors.contrastingText(counterPaint.getColor()));
+                }
 
                 if (showRemove && (isEditing || editingStartAnimationProgress != 0) && counterText == null) {
                     counterPaint.setAlpha((int) (editingStartAnimationProgress * 255));
@@ -940,6 +946,10 @@ public class FilterTabsView extends FrameLayout {
 
     private int scrollingToChild = -1;
     private final GradientDrawable selectorDrawable;
+    private int axViewportWidth;
+    private boolean axFolderMetricsGlass;
+    private final one.axgram.core.appearance.AxFolderTabsStyle axFolderStyle = new one.axgram.core.appearance.AxFolderTabsStyle();
+    private final RectF axFolderFrom = new RectF(), axFolderTo = new RectF(), axFolderSelected = new RectF();
 
     private int tabLineColorKey = Theme.key_actionBarTabLine;
     private int activeTextColorKey = Theme.key_actionBarTabActiveText;
@@ -965,8 +975,7 @@ public class FilterTabsView extends FrameLayout {
     private final SparseIntArray positionToX = new SparseIntArray(5);
 
     private boolean animationRunning;
-    private long lastAnimationTime;
-    private float animationTime;
+    private long animationStartTime;
     private int previousPosition;
     private int previousId;
     DefaultItemAnimator itemAnimator;
@@ -979,24 +988,14 @@ public class FilterTabsView extends FrameLayout {
             if (!animatingIndicator) {
                 return;
             }
-            long newTime = SystemClock.elapsedRealtime();
-            long dt = (newTime - lastAnimationTime);
-            if (dt > 17) {
-                dt = 17;
-            }
-            animationTime += dt / 320.0f;
-            setAnimationIdicatorProgress(interpolator.getInterpolation(animationTime));
-            if (animationTime > 1.0f) {
-                animationTime = 1.0f;
-            }
-            if (animationTime < 1.0f) {
-                AndroidUtilities.runOnUIThread(animationRunnable);
+            float progress = Math.min(1f, (SystemClock.uptimeMillis() - animationStartTime) / 320f);
+            float value = progress == 1f ? 1f : Math.max(0f, Math.min(0.999999f, interpolator.getInterpolation(progress)));
+            setAnimationIdicatorProgress(Math.max(animatingIndicatorProgress, value));
+            if (progress < 1f && animatingIndicator) {
+                postOnAnimation(animationRunnable);
             } else {
                 animatingIndicator = false;
                 setEnabled(true);
-                if (delegate != null) {
-                    delegate.onPageScrolled(1.0f);
-                }
             }
         }
     };
@@ -1274,7 +1273,18 @@ public class FilterTabsView extends FrameLayout {
     }
 
     public void stopAnimatingIndicator() {
+        removeCallbacks(animationRunnable);
         animatingIndicator = false;
+        setEnabled(true);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        if (animatingIndicator) {
+            setAnimationIdicatorProgress(1f);
+        }
+        stopAnimatingIndicator();
+        super.onDetachedFromWindow();
     }
 
     BlurredBackgroundDrawable blurredBackgroundDrawable;
@@ -1298,16 +1308,16 @@ public class FilterTabsView extends FrameLayout {
         selectedTabId = tab.id;
 
         if (animatingIndicator) {
-            AndroidUtilities.cancelRunOnUIThread(animationRunnable);
+            removeCallbacks(animationRunnable);
             animatingIndicator = false;
         }
 
-        animationTime = 0;
+        animationStartTime = SystemClock.uptimeMillis();
         animatingIndicatorProgress = 0;
         animatingIndicator = true;
         setEnabled(false);
 
-        AndroidUtilities.runOnUIThread(animationRunnable, 16);
+        postOnAnimation(animationRunnable);
 
         if (delegate != null) {
             delegate.onPageSelected(tab, scrollingForward);
@@ -1518,8 +1528,10 @@ public class FilterTabsView extends FrameLayout {
 
     @Override
     protected boolean drawChild(@NonNull Canvas canvas, View child, long drawingTime) {
+        boolean axGlass = one.axgram.core.appearance.AxAppearance.isGlassTheme();
+        if (child == listView && axGlass) drawSelector(canvas);
         boolean result = super.drawChild(canvas, child, drawingTime);
-        if (child == listView) {
+        if (child == listView && !axGlass) {
             drawSelector(canvas);
         }
         long newTime = SystemClock.elapsedRealtime();
@@ -1576,6 +1588,10 @@ public class FilterTabsView extends FrameLayout {
     }
 
     private void drawSelector(Canvas canvas) {
+        if (one.axgram.core.appearance.AxAppearance.isGlassTheme()) {
+            drawAxFolders(canvas);
+            return;
+        }
         final int height = getMeasuredHeight();
         selectorDrawable.setAlpha((int) (255 * listView.getAlpha()));
         float indicatorX = 0;
@@ -1646,18 +1662,65 @@ public class FilterTabsView extends FrameLayout {
 
     private final Path clipPath = new Path();
 
+    private void axFolderBounds(int position, RectF out) {
+        RecyclerView.ViewHolder holder = listView.findViewHolderForAdapterPosition(position);
+        float left, width;
+        if (holder != null) {
+            left = holder.itemView.getX(); width = holder.itemView.getWidth();
+        } else {
+            int first = layoutManager.findFirstVisibleItemPosition();
+            RecyclerView.ViewHolder anchor = listView.findViewHolderForAdapterPosition(first);
+            float offset = anchor == null ? 0 : positionToX.get(first) - additionalTabWidth / 2f - anchor.itemView.getX();
+            left = positionToX.get(position) - additionalTabWidth / 2f - offset;
+            width = positionToWidth.get(position) + FolderIconHelper.getPaddingTab() + additionalTabWidth;
+        }
+        out.set(left + dp(3), dp(11), left + width - dp(3), getHeight() - dp(11));
+    }
+
+    private void drawAxFolders(Canvas canvas) {
+        if (tabs.isEmpty()) return;
+        int from = animatingIndicator ? previousPosition : currentPosition;
+        int to = animatingIndicator ? currentPosition : manualScrollingToPosition >= 0 ? manualScrollingToPosition : currentPosition;
+        if (from < 0 || to < 0 || from >= tabs.size() || to >= tabs.size()) return;
+        axFolderBounds(from, axFolderFrom); axFolderBounds(to, axFolderTo);
+        float p = animatingIndicator || manualScrollingToPosition >= 0 ? animatingIndicatorProgress : 1f;
+        axFolderSelected.set(lerp(axFolderFrom.left, axFolderTo.left, p), dp(11),
+                lerp(axFolderFrom.right, axFolderTo.right, p), getHeight() - dp(11));
+        int save = canvas.save();
+        canvas.translate(listView.getTranslationX(), 0);
+        canvas.scale(listView.getScaleX(), 1, listView.getPivotX() + listView.getX(), listView.getPivotY());
+        for (int i = 0; i < listView.getChildCount(); i++) {
+            View child = listView.getChildAt(i);
+            float x = child.getX() + child.getWidth();
+            if (x > dp(14) && x < getWidth() - dp(14) && (x < axFolderSelected.left - dp(2) || x > axFolderSelected.right + dp(2))) {
+                axFolderStyle.separator(canvas, x, getHeight() / 2f);
+            }
+        }
+        if (listView.getAlpha() < 1) canvas.saveLayerAlpha(0, 0, getWidth(), getHeight(), Math.round(255 * listView.getAlpha()));
+        axFolderStyle.selected(canvas, axFolderSelected);
+        canvas.restoreToCount(save);
+    }
+
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
+        updateAxClip(w, h);
+    }
+
+    private void updateAxClip(int w, int h) {
         clipPath.rewind();
-        clipPath.addRoundRect(dp(9), dp(9), w - dp(9), h - dp(9),
-            dp(16), dp(16), Path.Direction.CW);
+        boolean glass = one.axgram.core.appearance.AxAppearance.isGlassTheme();
+        float inset = glass ? dp(8) : dp(9), radius = glass ? dp(18) : dp(16);
+        clipPath.addRoundRect(dp(9), inset, w - dp(9), h - inset, radius, radius, Path.Direction.CW);
     }
 
     @Override
     protected void dispatchDraw(@NonNull Canvas canvas) {
         canvas.save();
         canvas.clipPath(clipPath);
+        if (one.axgram.core.appearance.AxAppearance.isGlassTheme()) {
+            axFolderStyle.panel(canvas, dp(9), dp(8), getWidth() - dp(9), getHeight() - dp(8));
+        }
         super.dispatchDraw(canvas);
         canvas.restore();
     }
@@ -1671,7 +1734,22 @@ public class FilterTabsView extends FrameLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        boolean glass = one.axgram.core.appearance.AxAppearance.isGlassTheme();
+        axViewportWidth = Math.max(0, MeasureSpec.getSize(widthMeasureSpec) - listViewPaddingH * 2);
+        textPaint.setTypeface(glass ? one.axgram.core.appearance.AxChatListStyle.font(400) : AndroidUtilities.bold());
+        textCounterPaint.setTypeface(glass ? one.axgram.core.appearance.AxChatListStyle.font(500) : AndroidUtilities.bold());
+        boolean metricsChanged = glass != axFolderMetricsGlass;
+        if (metricsChanged) {
+            axFolderMetricsGlass = glass;
+            for (int i = 0; i < listView.getChildCount(); i++) {
+                if (listView.getChildAt(i) instanceof TabView) ((TabView) listView.getChildAt(i)).textLayout = null;
+            }
+        }
         if (!tabs.isEmpty()) {
+            if (glass || metricsChanged) {
+                allTabsWidth = 0;
+                for (Tab tab : tabs) allTabsWidth += tab.getWidth(false) + FolderIconHelper.getPaddingTab();
+            }
             final int width = MeasureSpec.getSize(widthMeasureSpec) - listViewPaddingH * 2;
             int trueTabsWidth;
             Tab firstTab = findDefaultTab();
@@ -1698,6 +1776,7 @@ public class FilterTabsView extends FrameLayout {
             invalidated = false;
         }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        updateAxClip(getMeasuredWidth(), getMeasuredHeight());
     }
 
     public Tab findDefaultTab() {
@@ -1733,7 +1812,7 @@ public class FilterTabsView extends FrameLayout {
             prevLayoutWidth = r - l;
             scrollingToChild = -1;
             if (animatingIndicator) {
-                AndroidUtilities.cancelRunOnUIThread(animationRunnable);
+                removeCallbacks(animationRunnable);
                 animatingIndicator = false;
                 setEnabled(true);
                 if (delegate != null) {

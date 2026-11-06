@@ -188,6 +188,18 @@ public abstract class BlurredBackgroundDrawable extends Drawable {
 
     protected BlurredBackgroundColorProvider colorProvider;
     protected int shadowColor, backgroundColor, strokeColorTop, strokeColorBottom;
+    private int axMaterialState = Integer.MIN_VALUE;
+
+    protected final void refreshAxMaterial() {
+        if (colorProvider == null || !colorProvider.usesAxAppearanceControls()) return;
+        int state = (one.axgram.core.appearance.AxAppearance.isGlassTheme() ? 1000 : 0)
+                + (one.axgram.core.appearance.AxAppearance.glassBlurEnabled() ? 100 : 0)
+                + one.axgram.core.appearance.AxAppearance.glassTransparency();
+        if (state != axMaterialState) {
+            axMaterialState = state;
+            updateColors();
+        }
+    }
 
     public BlurredBackgroundDrawable setColorProvider(BlurredBackgroundColorProvider colorProvider) {
         this.colorProvider = colorProvider;
@@ -206,6 +218,9 @@ public abstract class BlurredBackgroundDrawable extends Drawable {
         if (colorProvider == null) return;
 
         backgroundColor = colorProvider.getBackgroundColor();
+        if (colorProvider.usesAxAppearanceControls()) {
+            backgroundColor = one.axgram.core.appearance.AxAppearance.glassColor(backgroundColor);
+        }
         shadowColor = colorProvider.getShadowColor();
         strokeColorTop = colorProvider.getStrokeColorTop();
         strokeColorBottom = colorProvider.getStrokeColorBottom();
@@ -550,6 +565,7 @@ public abstract class BlurredBackgroundDrawable extends Drawable {
     /* Universal */
 
     protected void drawSource(Canvas canvas, BlurredBackgroundSource source) {
+        refreshAxMaterial();
         if (boundProps.boundsWithPadding.isEmpty()) {
             return;
         }

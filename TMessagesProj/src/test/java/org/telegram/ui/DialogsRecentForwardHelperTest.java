@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import xyz.nextalone.nagram.helper.DialogsRecentForwardHelper;
+import one.axgram.extra.helper.DialogsRecentForwardHelper;
 
 public class DialogsRecentForwardHelperTest {
     @Test

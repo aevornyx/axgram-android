@@ -1,0 +1,11 @@
+<resources>
+    <string name="AxWelcomeTagline">Твой привычный мир.\nНовый взгляд.</string>
+    <string name="AxWelcomeStart">Начать</string>
+    <string name="AxWelcomeUnofficial">Неофициальный клиент Telegram.</string>
+    <string name="AxWelcomeSwitchTheme">Переключить светлую и тёмную тему</string>
+    <string name="AxWelcomeThemeTitle">Твой AxGram</string>
+    <string name="AxWelcomeThemeCopy">Выбери, как он будет выглядеть.\nОформление можно изменить в настройках.</string>
+    <string name="AxWelcomeLightCopy">Свет, воздух и мягкие грани</string>
+    <string name="AxWelcomeDarkCopy">Графит и холодный акцент</string>
+    <string name="AxWelcomeSystemCopy">Меняется вместе с устройством</string>
+</resources>

@@ -365,7 +365,7 @@ public class TextCell extends FrameLayout {
         textView.setRightDrawable(null);
         valueTextView.setText(valueText = null, false);
         if (resId != 0) {
-            imageView.setImageResource(resId);
+            one.axgram.core.appearance.AxIconPack.bind(imageView, resId);
             imageView.setVisibility(VISIBLE);
             imageView.setPadding(0, AndroidUtilities.dp(7), 0, 0);
         } else {
@@ -539,7 +539,7 @@ public class TextCell extends FrameLayout {
         imageView.setTranslationX(0);
         imageView.setTranslationY(0);
         imageView.setPadding(0, dp(7), 0, 0);
-        imageView.setImageResource(resId);
+        one.axgram.core.appearance.AxIconPack.bind(imageView, resId);
         needDivider = divider;
         setWillNotDraw(!needDivider);
         if (checkBox != null) {
@@ -592,7 +592,7 @@ public class TextCell extends FrameLayout {
         imageView.setTranslationX(0);
         imageView.setTranslationY(0);
         imageView.setPadding(0, dp(7), 0, 0);
-        imageView.setImageResource(resId);
+        one.axgram.core.appearance.AxIconPack.bind(imageView, resId);
         needDivider = divider;
         setWillNotDraw(!needDivider);
         if (checkBox != null) {
@@ -625,7 +625,7 @@ public class TextCell extends FrameLayout {
         imageView.setVisibility(VISIBLE);
         imageView.setPadding(dp(2), dp(2), dp(2), dp(2));
         imageView.setTranslationX(dp(LocaleController.isRTL ? 0 : -3));
-        imageView.setImageResource(resId);
+        one.axgram.core.appearance.AxIconPack.bind(imageView, resId);
         imageView.setColorFilter(new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN));
 
         final boolean border = resourcesProvider != null ? resourcesProvider.isDark() : Theme.isCurrentThemeDark();
@@ -667,7 +667,7 @@ public class TextCell extends FrameLayout {
         }
         imageView.setVisibility(VISIBLE);
         imageView.setPadding(0, dp(7), 0, 0);
-        imageView.setImageResource(resId);
+        one.axgram.core.appearance.AxIconPack.bind(imageView, resId);
         needDivider = divider;
         setWillNotDraw(!needDivider);
         if (emojiDrawable != null) {

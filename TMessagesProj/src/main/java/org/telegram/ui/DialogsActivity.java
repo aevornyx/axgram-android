@@ -406,6 +406,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
         public ViewPage(Context context) {
             super(context);
+            if (!onlySelect && initialDialogsType == DIALOGS_TYPE_DEFAULT) {
+                setBackground(new one.axgram.core.appearance.AxChatListBackdrop(context));
+            }
         }
 
         public boolean isDefaultDialogType() {
@@ -3157,6 +3160,21 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     @Override
     public ActionBar createActionBar(Context context) {
         ActionBar actionBar = new ActionBar(context, resourceProvider) {
+            private android.graphics.Typeface axNativeTitleFont;
+            private boolean axTitleStyled;
+
+            @Override
+            protected void dispatchDraw(Canvas canvas) {
+                if (!onlySelect && initialDialogsType == DIALOGS_TYPE_DEFAULT && getTitleTextView() != null) {
+                    boolean glass = one.axgram.core.appearance.AxAppearance.isGlassTheme();
+                    if (glass != axTitleStyled) {
+                        if (glass) axNativeTitleFont = getTitleTextView().getPaint().getTypeface();
+                        getTitleTextView().setTypeface(glass ? one.axgram.core.appearance.AxChatListStyle.font(600) : axNativeTitleFont);
+                        axTitleStyled = glass;
+                    }
+                }
+                super.dispatchDraw(canvas);
+            }
 
             @Override
             public void setTranslationY(float translationY) {
@@ -3345,6 +3363,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             }
         };
         fragmentSearchField.setPadding(dp(4), dp(4), dp(4), dp(4));
+        fragmentSearchField.setAxGlassStyle(!onlySelect && initialDialogsType == DIALOGS_TYPE_DEFAULT);
         fragmentSearchField.setPivotX(0);
         fragmentSearchField.setPivotY(0);
         if (initialDialogsType == DIALOGS_TYPE_DEFAULT) {
@@ -12357,6 +12376,13 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         ArrayList<ThemeDescription> arrayList = new ArrayList<>();
 
         arrayList.add(new ThemeDescription(fragmentView, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundWhite));
+        if (viewPages != null) {
+            for (ViewPage page : viewPages) {
+                if (page != null && page.getBackground() instanceof one.axgram.core.appearance.AxChatListBackdrop) {
+                    arrayList.add(one.axgram.core.appearance.AxChatListBackdrop.colorBinding(page));
+                }
+            }
+        }
 
         if (movingView != null) {
             arrayList.add(new ThemeDescription(movingView, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundWhite));
@@ -14496,6 +14522,10 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
     private void switchTheme(Theme.ThemeInfo themeInfo, boolean toDark) {
         if (optionsItem == null) return;
+        if (one.axgram.core.appearance.AxAppearance.isGlassTheme()) {
+            toDark = !Theme.isCurrentThemeDark();
+            themeInfo = one.axgram.core.appearance.AxAppearance.prepareQuickThemeSwitch(toDark);
+        }
         int[] pos = new int[2];
         optionsItem.getLocationInWindow(pos);
         pos[0] += optionsItem.getIconView().getMeasuredWidth() / 2;

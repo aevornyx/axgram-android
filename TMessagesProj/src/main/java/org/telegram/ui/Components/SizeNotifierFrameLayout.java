@@ -167,12 +167,16 @@ public class SizeNotifierFrameLayout extends FrameLayout implements Theme.Colora
     }
 
     private class BackgroundView extends View {
+        private final one.axgram.core.appearance.AxWallpaperEffects axWallpaperEffects = new one.axgram.core.appearance.AxWallpaperEffects();
         public BackgroundView(Context context) {
             super(context);
         }
 
         @Override
         protected void onDraw(Canvas canvas) {
+            int axBlur = useAxWallpaperEffects() && one.axgram.core.appearance.AxAppearance.isGlassTheme()
+                    ? one.axgram.core.appearance.AxAppearance.wallpaperBlur() : 0;
+            axWallpaperEffects.update(this, axBlur);
             if (backgroundDrawable == null || skipBackgroundDrawing) {
                 return;
             }
@@ -205,6 +209,7 @@ public class SizeNotifierFrameLayout extends FrameLayout implements Theme.Colora
             themeAnimationValue = Utilities.clamp(themeAnimationValue + AndroidUtilities.screenRefreshTime / 200, 1f, 0);
             for (int a = 0; a < 2; a++) {
                 Drawable drawable = a == 0 ? oldBackgroundDrawable : backgroundDrawable;
+                drawable = axWallpaperEffects.resolve(drawable, axBlur, this::invalidate);
                 if (drawable == null) {
                     continue;
                 }
@@ -357,6 +362,8 @@ public class SizeNotifierFrameLayout extends FrameLayout implements Theme.Colora
     protected void onBackgroundViewInvalidate() {
 
     }
+
+    protected boolean useAxWallpaperEffects() { return false; }
 
     public void onUpdateBackgroundDrawable(Drawable drawable) {
 

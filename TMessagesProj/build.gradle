@@ -19,7 +19,7 @@ idea {
 }
 
 def verName = APP_VERSION_NAME
-def verCode = 1246
+def verCode = 1271
 
 
 def officialVer = APP_VERSION_NAME

@@ -245,7 +245,7 @@ public class TextSettingsCell extends FrameLayout {
                 params.leftMargin = AndroidUtilities.dp(this.padding);
             }
         } else {
-            imageView.setImageResource(resId);
+            one.axgram.core.appearance.AxIconPack.bind(imageView, resId);
             imageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon, resourcesProvider), PorterDuff.Mode.MULTIPLY));
             imageView.setBackground(null);
             imageView.setVisibility(VISIBLE);
@@ -269,7 +269,7 @@ public class TextSettingsCell extends FrameLayout {
             }
         } else {
             imageView.setBackground(Theme.createRoundRectDrawable(AndroidUtilities.dp(8), color));
-            imageView.setImageResource(resId);
+            one.axgram.core.appearance.AxIconPack.bind(imageView, resId);
             imageView.setColorFilter(new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY));
             imageView.setVisibility(VISIBLE);
             if (LocaleController.isRTL) {

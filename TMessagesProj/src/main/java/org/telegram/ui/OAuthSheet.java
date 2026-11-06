@@ -67,6 +67,20 @@ import java.util.Collections;
 
 public class OAuthSheet {
 
+    public interface NativeCompletion {
+        boolean active();
+        void accepted(int account, String url);
+        void failed();
+        default void failed(String error) { failed(); }
+        void cancelled();
+        void bindDismiss(Runnable dismiss);
+    }
+
+    public static void handleNative(int account, TLRPC.TL_messages_requestUrlAuth request, TLRPC.UrlAuthResult result, NativeCompletion completion) {
+        if (completion == null) throw new IllegalArgumentException("Confirmation callback required");
+        handle(false, account, request, result, null, null, null, false, null, completion);
+    }
+
     private static BottomSheet showing;
 
     public static void handle(boolean external, int currentAccount, TLRPC.TL_messages_requestUrlAuth request, TLRPC.UrlAuthResult result) {
@@ -74,8 +88,14 @@ public class OAuthSheet {
     }
 
     public static void handle(boolean external, int currentAccount, TLRPC.TL_messages_requestUrlAuth request, TLRPC.UrlAuthResult result, String originUrl, TLRPC.UrlAuthResult prevResult, String matchCode, boolean sentPhoneNumber, BotWebViewContainer webView) {
+        handle(external, currentAccount, request, result, originUrl, prevResult, matchCode, sentPhoneNumber, webView, null);
+    }
+
+    private static void handle(boolean external, int currentAccount, TLRPC.TL_messages_requestUrlAuth request, TLRPC.UrlAuthResult result, String originUrl, TLRPC.UrlAuthResult prevResult, String matchCode, boolean sentPhoneNumber, BotWebViewContainer webView, NativeCompletion completion) {
+        if (completion != null && !completion.active()) return;
         if (result instanceof TLRPC.TL_urlAuthResultAccepted) {
             final TLRPC.TL_urlAuthResultAccepted r = (TLRPC.TL_urlAuthResultAccepted) result;
+            if (completion != null) { completion.accepted(currentAccount, r.url); return; }
             if (webView != null) {
                 if (TextUtils.isEmpty(request.in_app_origin)) return;
                 if (!TextUtils.equals(webView.getOriginHost(), request.in_app_origin)) return;
@@ -119,6 +139,7 @@ public class OAuthSheet {
             }
             return;
         } else if (result instanceof TLRPC.TL_urlAuthResultDefault) {
+            if (completion != null) { completion.failed(); return; }
             if (webView != null) return;
             if (!TextUtils.isEmpty(request.url)) {
                 final BaseFragment fragment = LaunchActivity.getSafeLastFragment();
@@ -132,14 +153,16 @@ public class OAuthSheet {
             return;
         }
 
-        if (!(result instanceof TLRPC.TL_urlAuthResultRequest))
+        if (!(result instanceof TLRPC.TL_urlAuthResultRequest)) {
+            if (completion != null) completion.failed();
             return;
+        }
         final TLRPC.TL_urlAuthResultRequest r = (TLRPC.TL_urlAuthResultRequest) result;
 
         final BaseFragment fragment = LaunchActivity.getSafeLastFragment();
-        if (fragment == null) return;
+        if (fragment == null) { if (completion != null) completion.failed(); return; }
         final Context context = fragment.getContext();
-        if (context == null) return;
+        if (context == null) { if (completion != null) completion.failed(); return; }
 
         final Theme.ResourcesProvider resourcesProvider = fragment.getResourceProvider();
         BottomSheet.Builder b = new BottomSheet.Builder(context, false, fragment.getResourceProvider());
@@ -192,7 +215,7 @@ public class OAuthSheet {
         accountSelectorLayout.setPadding(dp(8), dp(4), dp(8), 0);
         container.addView(accountSelectorLayout, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, 0, Gravity.LEFT | Gravity.TOP, 6, 4, 6, 0));
         ScaleStateListAnimator.apply(accountSelectorLayout);
-        if (accountNumbers.size() <= 1 || request.peer != null) {
+        if (accountNumbers.size() <= 1 || request.peer != null || completion != null) {
             accountSelectorLayout.setVisibility(View.GONE);
         }
 
@@ -323,6 +346,7 @@ public class OAuthSheet {
 
         final String[] selectedMatchCode = new String[] { matchCode };
         final Utilities.Callback<Integer> switchAccount = account -> {
+            if (completion != null) return;
             if (selectedAccount[0] == account) return;
 
             final AlertDialog progressDialog = new AlertDialog(ApplicationLoader.applicationContext, AlertDialog.ALERT_TYPE_SPINNER);
@@ -370,7 +394,17 @@ public class OAuthSheet {
                 .show();
         });
         final boolean[] processed = new boolean[1];
+        if (completion != null) completion.bindDismiss(sheet::dismiss);
         cancel.setOnClickListener(v -> {
+            if (completion != null) {
+                boolean active = completion.active(); processed[0] = true; sheet.dismiss(); completion.cancelled();
+                if (active && request != null && !TextUtils.isEmpty(request.url)) {
+                    final TLRPC.TL_messages_declineUrlAuth decline = new TLRPC.TL_messages_declineUrlAuth();
+                    decline.url = request.url;
+                    ConnectionsManager.getInstance(currentAccount).sendRequest(decline, (res, err) -> {});
+                }
+                return;
+            }
             if (request == null || TextUtils.isEmpty(request.url)) {
                 processed[0] = true;
                 sheet.dismiss();
@@ -394,6 +428,7 @@ public class OAuthSheet {
         final boolean[] allowPhoneNumber = new boolean[1];
         final BottomSheet[] showingMatchCodes = new BottomSheet[1];
         final Runnable accept = () -> {
+            if (completion != null && !completion.active()) { processed[0] = true; sheet.dismiss(); return; }
             if (login.isLoading()) return;
             if (cancel.isLoading()) return;
 
@@ -420,7 +455,9 @@ public class OAuthSheet {
             ConnectionsManager.getInstance(selectedAccount[0]).sendRequestTyped(req, AndroidUtilities::runOnUIThread, (res, err) -> {
                 processed[0] = true;
                 sheet.dismiss();
+                if (completion != null && !completion.active()) return;
                 if (err != null) {
+                    if (completion != null) { completion.failed(err.text); return; }
                     if ("URL_EXPIRED".equalsIgnoreCase(err.text)) {
                         getBulletinFactory()
                             .createSimpleBulletin(R.raw.error, getString(R.string.BotAuthLoggedInFailTitle), TextUtils.isEmpty(domain) ? getString(R.string.BotAuthLoggedInFailNoDomain) : replaceSingleLinkBold(formatString(R.string.BotAuthLoggedInFail, domain), Theme.getColor(Theme.key_undo_cancelColor, resourcesProvider)))
@@ -429,16 +466,18 @@ public class OAuthSheet {
                         getBulletinFactory().showForError(err);
                     }
                 } else {
-                    handle(external, selectedAccount[0], request, res, originUrl, r, null, req.share_phone_number, webView);
+                    handle(external, selectedAccount[0], request, res, originUrl, r, null, req.share_phone_number, webView, completion);
                 }
-            });
+            }, completion == null ? 0 : ConnectionsManager.RequestFlagFailOnServerErrors);
         };
         final Runnable beforeAccept = () -> {
+            if (completion != null && !completion.active()) return;
             if (!r.match_codes.isEmpty() && TextUtils.isEmpty(selectedMatchCode[0])) {
-                showMatchCodeSheet(context, currentAccount, r.match_codes, r.domain, code -> {
+                BottomSheet codeSheet = showMatchCodeSheet(context, currentAccount, r.match_codes, r.domain, code -> {
                     selectedMatchCode[0] = code;
                     accept.run();
                 }, true, () -> {}, fragment.getResourceProvider());
+                if (completion != null) completion.bindDismiss(codeSheet::dismiss);
             } else {
                 accept.run();
             }
@@ -470,6 +509,7 @@ public class OAuthSheet {
                 showingMatchCodes[0].dismiss();
                 showingMatchCodes[0] = null;
             }
+            if (completion != null && !processed[0]) completion.cancelled();
         });
 
         if (showing != null) {
@@ -482,18 +522,22 @@ public class OAuthSheet {
             sheet.show();
         } else {
             showing = showMatchCodeSheet(context, currentAccount, r.match_codes, domain, code -> {
+                if (completion != null && !completion.active()) return;
                 final AlertDialog progressDialog = new AlertDialog(context, AlertDialog.ALERT_TYPE_SPINNER);
                 progressDialog.showDelayed(200);
+                if (completion != null) completion.bindDismiss(progressDialog::dismiss);
 
                 final TLRPC.TL_messages_checkUrlAuthMatchCode req = new TLRPC.TL_messages_checkUrlAuthMatchCode();
                 req.match_code = selectedMatchCode[0] = code;
                 req.url = request.url;
                 ConnectionsManager.getInstance(currentAccount).sendRequestTyped(req, AndroidUtilities::runOnUIThread, (res, err) -> {
                     progressDialog.dismiss();
+                    if (completion != null && !completion.active()) return;
                     if (res instanceof TLRPC.TL_boolTrue) {
                         showing = sheet;
                         sheet.show();
                     } else {
+                        if (completion != null) { completion.failed(err == null ? null : err.text); return; }
                         if (showing != null) {
                             showing.dismiss();
                             showing = null;
@@ -506,19 +550,22 @@ public class OAuthSheet {
             }, false, () -> {
                 showing = null;
                 if (!processed[0]) {
+                    boolean decline = completion == null || completion.active();
                     processed[0] = true;
+                    if (completion != null) completion.cancelled();
 
                     if (webView != null) {
                         webView.notifyEvent("oauth_result_failed", obj());
                     }
 
-                    if (request != null && !TextUtils.isEmpty(request.url)) {
+                    if (decline && request != null && !TextUtils.isEmpty(request.url)) {
                         final TLRPC.TL_messages_declineUrlAuth req = new TLRPC.TL_messages_declineUrlAuth();
                         req.url = request.url;
                         ConnectionsManager.getInstance(currentAccount).sendRequest(req, null);
                     }
                 }
             }, fragment.getResourceProvider());
+            if (completion != null && showing != null) completion.bindDismiss(showing::dismiss);
         }
     }
 

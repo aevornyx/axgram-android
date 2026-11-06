@@ -13933,6 +13933,16 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
     }
 
     private ImageLocation getImageLocation(int index, long[] size) {
+        if (secureDocuments.isEmpty() && imagesArrLocations.isEmpty() && index >= 0 && index < imagesArr.size()) {
+            MessageObject archived = imagesArr.get(index);
+            File file = archived.isPhoto() ? archived.getArchivedMediaFile() : null;
+            if (file != null) {
+                if (size != null) {
+                    size[0] = file.length();
+                }
+                return ImageLocation.getForPath(file.getAbsolutePath());
+            }
+        }
         if (index < 0) {
             return null;
         }

@@ -10439,7 +10439,13 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                         }
 
                         final String filter = currentMessageObject.isLivePhoto() ? ImageLoader.AUTOPLAY_FILTER_NONLOOP : ImageLoader.AUTOPLAY_FILTER;
-                        if (currentMessageObject.videoEditedInfo != null && currentMessageObject.videoEditedInfo.canAutoPlaySourceVideo() && document != null) {
+                        java.io.File archivedVideo = messageObject.getArchivedMediaFile();
+                        if (archivedVideo != null) {
+                            photoImage.setImage(ImageLocation.getForPath(archivedVideo.getAbsolutePath()), filter,
+                                    ImageLocation.getForObject(currentPhotoObject, photoParentObject), currentPhotoFilter,
+                                    ImageLocation.getForDocument(currentPhotoObjectThumb, document), currentPhotoFilterThumb,
+                                    currentPhotoObjectThumbStripped, archivedVideo.length(), null, messageObject, 0);
+                        } else if (currentMessageObject.videoEditedInfo != null && currentMessageObject.videoEditedInfo.canAutoPlaySourceVideo() && document != null) {
                             photoImage.setImage(ImageLocation.getForPath(currentMessageObject.videoEditedInfo.originalPath), filter, ImageLocation.getForObject(currentPhotoObject, photoParentObject), currentPhotoFilter, ImageLocation.getForDocument(currentPhotoObjectThumb, document), currentPhotoFilterThumb, currentPhotoObjectThumbStripped, document.size, null, messageObject, 0);
                             photoImage.setMediaStartEndTime(currentMessageObject.videoEditedInfo.startTime / 1000, currentMessageObject.videoEditedInfo.endTime / 1000);
                         } else if (messageObject.cachedQuality != null) {
@@ -10467,7 +10473,14 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                     } else if (messageObject.type == MessageObject.TYPE_EXTENDED_MEDIA_PREVIEW) {
                         photoImage.setImage(null, null, ImageLocation.getForObject(currentPhotoObjectThumb, photoParentObject), currentPhotoFilterThumb, currentPhotoObjectThumbStripped, 0, null, currentMessageObject, cacheType);
                     } else if (messageObject.type == MessageObject.TYPE_PHOTO) {
-                        if (messageObject.useCustomPhoto) {
+                        java.io.File archivedPhoto = messageObject.getArchivedMediaFile();
+                        if (archivedPhoto != null) {
+                            messageObject.attachPathExists = true;
+                            messageObject.mediaExists = true;
+                            photoImage.setImage(ImageLocation.getForPath(archivedPhoto.getAbsolutePath()), currentPhotoFilter,
+                                    ImageLocation.getForObject(currentPhotoObjectThumb, photoParentObject), currentPhotoFilterThumb,
+                                    currentPhotoObjectThumbStripped, archivedPhoto.length(), null, messageObject, 0);
+                        } else if (messageObject.useCustomPhoto) {
                             photoImage.setImageBitmap(getResources().getDrawable(R.drawable.theme_preview_image));
                         } else {
                             if (currentPhotoObject != null) {
@@ -12198,6 +12211,10 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
     private boolean needHide;
 
     public void checkVideoPlayback(boolean allowStart, Bitmap thumb) {
+        // A RecyclerView bind can precede attachment and defer setMessageObject.
+        if (currentMessageObject == null || messageObjectToSet != null) {
+            return;
+        }
         if (currentMessageObject.isVideo()) {
             if (MediaController.getInstance().isPlayingMessage(currentMessageObject)) {
                 photoImage.setAllowStartAnimation(false);

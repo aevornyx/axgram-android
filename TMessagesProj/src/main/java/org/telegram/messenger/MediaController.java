@@ -3209,9 +3209,19 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
         }
         if (visible) {
             if (pipRoundVideoView != null) {
-                pipSwitchingState = 2;
+                TextureView pipTexture = pipRoundVideoView.getTextureView();
+                boolean hasSurface = pipTexture != null && pipTexture.isAvailable();
+                // An archive can return inline before the new PIP has attached its surface.
+                // In that case onSurfaceDestroyed will never transfer it: bind the inline target directly.
+                pipSwitchingState = hasSurface ? 2 : 0;
                 pipRoundVideoView.close(true);
                 pipRoundVideoView = null;
+                if (!hasSurface) {
+                    if (currentAspectRatioFrameLayout.getParent() == null) {
+                        currentTextureViewContainer.addView(currentAspectRatioFrameLayout);
+                    }
+                    videoPlayer.setTextureView(currentTextureView);
+                }
             } else {
                 if (currentAspectRatioFrameLayout.getParent() == null) {
                     currentTextureViewContainer.addView(currentAspectRatioFrameLayout);

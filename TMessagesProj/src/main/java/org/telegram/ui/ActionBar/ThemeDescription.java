@@ -604,6 +604,8 @@ public class ThemeDescription {
                                     } else {
                                         ((SimpleTextView) object).setTextColor(color);
                                     }
+                                } else if (object instanceof org.telegram.ui.Components.AnimatedTextView) {
+                                    ((org.telegram.ui.Components.AnimatedTextView) object).setTextColor(color);
                                 } else if (object instanceof TextView) {
                                     TextView textView = (TextView) object;
                                     if ((changeFlags & FLAG_IMAGECOLOR) != 0) {

@@ -1780,6 +1780,11 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
         if (messageObject == null) {
             return;
         }
+        if (messageObject.axDeleted) {
+            sendArchivedMessageCopy(messageObject, did, null, false, true, 0, 0,
+                    payStars, monoForumPeerId, suggestionParams);
+            return;
+        }
         if (messageObject.messageOwner.media != null && !(messageObject.messageOwner.media instanceof TLRPC.TL_messageMediaEmpty) && !(messageObject.messageOwner.media instanceof TLRPC.TL_messageMediaWebPage) && !(messageObject.messageOwner.media instanceof TLRPC.TL_messageMediaGame) && !(messageObject.messageOwner.media instanceof TLRPC.TL_messageMediaInvoice)) {
             HashMap<String, String> params = null;
             if (DialogObject.isEncryptedDialog(did) && messageObject.messageOwner.peer_id != null && (messageObject.messageOwner.media.photo instanceof TLRPC.TL_photo || messageObject.messageOwner.media.document instanceof TLRPC.TL_document)) {
@@ -2059,6 +2064,112 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
         }
     }
 
+    private void sendArchivedMessageCopy(MessageObject source, long peer, MessageObject replyToTopMsg,
+                                         boolean hideCaption, boolean notify, int scheduleDate, int scheduleRepeatPeriod,
+                                         long payStars, long monoForumPeerId, MessageSuggestionParams suggestionParams) {
+        final long ownerId = getUserConfig().getClientUserId();
+        final int sourceAccount = source.currentAccount;
+        final long sourceOwnerId = UserConfig.getInstance(sourceAccount).getClientUserId();
+        Utilities.globalQueue.postRunnable(() -> {
+            if (getUserConfig().getClientUserId() != ownerId || sourceOwnerId <= 0
+                    || UserConfig.getInstance(sourceAccount).getClientUserId() != sourceOwnerId) return;
+            try {
+                TLRPC.Message saved = one.axgram.core.AxDeletedMessages.getInstance().getMessage(
+                        sourceAccount, source.getDialogId(), source.getId());
+                final TLRPC.Message original = saved != null ? saved : source.messageOwner;
+                TLRPC.MessageMedia media = MessageObject.getMedia(original);
+                final TLRPC.TL_document document;
+                final TLRPC.TL_photo photo;
+                final File copy;
+                if (media != null && (media.document instanceof TLRPC.TL_document
+                        || media.photo instanceof TLRPC.TL_photo)) {
+                    File folder = new File(ApplicationLoader.applicationContext.getCacheDir(),
+                            "media/archive-send/" + java.util.UUID.randomUUID());
+                    String filename = "photo.jpg";
+                    if (media.document instanceof TLRPC.TL_document) {
+                        filename = FileLoader.getDocumentFileName(media.document);
+                        if (TextUtils.isEmpty(filename)) {
+                            String extension = android.webkit.MimeTypeMap.getSingleton()
+                                    .getExtensionFromMimeType(media.document.mime_type);
+                            filename = "media." + (TextUtils.isEmpty(extension) ? "bin" : extension);
+                        }
+                    }
+                    copy = one.axgram.core.AxDeletedMessages.getInstance().exportMediaCopy(
+                            sourceAccount, original, folder, filename);
+                    document = media.document instanceof TLRPC.TL_document
+                            ? one.axgram.core.AxDeletedUpload.createLocalDocument(media.document) : null;
+                    photo = document == null ? generatePhotoSizes(copy.getAbsolutePath(), null) : null;
+                    if (document == null && photo == null) throw new java.io.IOException("Cannot prepare photo");
+                } else {
+                    document = null;
+                    photo = null;
+                    copy = null;
+                }
+                AndroidUtilities.runOnUIThread(() -> {
+                    if (getUserConfig().getClientUserId() != ownerId || sourceOwnerId <= 0
+                            || UserConfig.getInstance(sourceAccount).getClientUserId() != sourceOwnerId) return;
+                    String caption = hideCaption ? "" : original.message;
+                    ArrayList<TLRPC.MessageEntity> entities = hideCaption ? null : original.entities;
+                    SendMessageParams params;
+                    if (document != null) {
+                        params = SendMessageParams.of(document, null, copy.getAbsolutePath(), peer,
+                                null, replyToTopMsg, caption, entities, null, null, notify,
+                                scheduleDate, scheduleRepeatPeriod, 0, null, null, false);
+                    } else if (photo != null) {
+                        params = SendMessageParams.of(photo, copy.getAbsolutePath(), peer, null,
+                                replyToTopMsg, caption, entities, null, null, notify,
+                                scheduleDate, scheduleRepeatPeriod, 0, null, false);
+                    } else if (media instanceof TLRPC.TL_messageMediaGeo
+                            || media instanceof TLRPC.TL_messageMediaVenue
+                            || media instanceof TLRPC.TL_messageMediaGeoLive) {
+                        TLRPC.MessageMedia location = media;
+                        if (media instanceof TLRPC.TL_messageMediaGeoLive) {
+                            location = new TLRPC.TL_messageMediaGeo();
+                            location.geo = media.geo;
+                        }
+                        params = SendMessageParams.of(location, peer, null, replyToTopMsg,
+                                null, null, notify, scheduleDate, scheduleRepeatPeriod);
+                    } else if (media instanceof TLRPC.TL_messageMediaContact) {
+                        TLRPC.User user = new TLRPC.TL_userContact_old2();
+                        user.phone = media.phone_number;
+                        user.first_name = media.first_name;
+                        user.last_name = media.last_name;
+                        user.id = media.user_id;
+                        params = SendMessageParams.of(user, peer, null, replyToTopMsg,
+                                null, null, notify, scheduleDate, scheduleRepeatPeriod);
+                    } else if (media == null || media instanceof TLRPC.TL_messageMediaEmpty
+                            || media instanceof TLRPC.TL_messageMediaWebPage) {
+                        params = SendMessageParams.of(original.message, peer, null, replyToTopMsg,
+                                null, false, original.entities, null, null, notify,
+                                scheduleDate, scheduleRepeatPeriod, null, false);
+                    } else {
+                        android.widget.Toast.makeText(ApplicationLoader.applicationContext,
+                                "Этот тип удалённого сообщения пока нельзя отправить копией",
+                                android.widget.Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    params.hasMediaSpoilers = media != null && media.spoiler;
+                    params.invert_media = original.invert_media;
+                    params.payStars = payStars;
+                    params.monoForumPeer = monoForumPeerId;
+                    params.suggestionParams = suggestionParams;
+                    params.params = new HashMap<>();
+                    params.params.put("axArchiveCopy", "1");
+                    sendMessage(params);
+                });
+            } catch (Exception error) {
+                FileLog.e("AxGram archive copy", error);
+                AndroidUtilities.runOnUIThread(() -> {
+                    if (getUserConfig().getClientUserId() == ownerId) {
+                        android.widget.Toast.makeText(ApplicationLoader.applicationContext,
+                                "Не удалось прочитать сохранённый файл. Открой «Состояние файла» в архиве.",
+                                android.widget.Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
+    }
+
     public int sendMessage(ArrayList<MessageObject> messages, final long peer, boolean forwardFromMyName, boolean hideCaption, boolean notify, int scheduleDate, long payStars) {
         return sendMessage(messages, peer, forwardFromMyName, hideCaption, notify, scheduleDate, null, -1, payStars);
     }
@@ -2150,6 +2261,42 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                 canSendMusic = ChatObject.canSendMusic(chat);
             }
 
+            if (messages.size() > 1) {
+                boolean archivedCopy = false;
+                for (MessageObject message : messages) {
+                    if (message.axDeleted) {
+                        archivedCopy = true;
+                        break;
+                    }
+                }
+                if (archivedCopy) {
+                    int result = 0;
+                    for (MessageObject message : messages) {
+                        ArrayList<MessageObject> single = new ArrayList<>();
+                        single.add(message);
+                        if (message.axDeleted) {
+                            int currentResult = sendMessage(single, peer, forwardFromMyName, hideCaption, notify,
+                                    scheduleDate, scheduleRepeatPeriod, replyToTopMsg, video_timestamp, payStars,
+                                    monoForumPeerId, suggestionParams);
+                            if (result == 0) result = currentResult;
+                        } else {
+                            Utilities.globalQueue.postRunnable(() -> AndroidUtilities.runOnUIThread(() -> {
+                                if (getUserConfig().getClientUserId() != myId) return;
+                                int currentResult = sendMessage(single, peer, forwardFromMyName, hideCaption, notify,
+                                        scheduleDate, scheduleRepeatPeriod, replyToTopMsg, video_timestamp, payStars,
+                                        monoForumPeerId, suggestionParams);
+                                if (currentResult != 0) {
+                                    android.widget.Toast.makeText(ApplicationLoader.applicationContext,
+                                            "Получатель не разрешает отправку этого типа сообщения",
+                                            android.widget.Toast.LENGTH_LONG).show();
+                                }
+                            }));
+                        }
+                    }
+                    return result;
+                }
+            }
+
             LongSparseArray<Long> groupsMap = new LongSparseArray<>();
             ArrayList<MessageObject> objArr = new ArrayList<>();
             ArrayList<TLRPC.Message> arr = new ArrayList<>();
@@ -2163,7 +2310,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             long lastGroupedId;
             for (int a = 0; a < messages.size(); a++) {
                 MessageObject msgObj = messages.get(a);
-                if (msgObj.getId() <= 0 || msgObj.needDrawBluredPreview()) {
+                if ((msgObj.getId() <= 0 && !msgObj.axDeleted) || msgObj.needDrawBluredPreview()) {
                     if (msgObj.type == MessageObject.TYPE_TEXT && !TextUtils.isEmpty(msgObj.messageText)) {
                         TLRPC.WebPage webPage = msgObj.messageOwner.media != null ? msgObj.messageOwner.media.webpage : null;
 
@@ -2241,6 +2388,12 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                     if (sendResult == 0) {
                         sendResult = ChatObject.isActionBannedByDefault(chat, ChatObject.ACTION_SEND_DOCUMENTS) ? 17 : 18;
                     }
+                    continue;
+                }
+
+                if (msgObj.axDeleted) {
+                    sendArchivedMessageCopy(msgObj, peer, replyToTopMsg, hideCaption, notify, scheduleDate,
+                            scheduleRepeatPeriod, payStars, monoForumPeerId, suggestionParams);
                     continue;
                 }
 
@@ -8410,6 +8563,10 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                         isSentError = true;
                     }
                     if (isSentError) {
+                        if (newMsgObj.params != null && newMsgObj.params.containsKey("axArchiveCopy")) {
+                            String reason = error == null || error.text == null ? "UNKNOWN" : error.text.replaceAll("[^A-Z0-9_]", "_");
+                            android.util.Log.e("AxGramArchive", "Send failed: " + reason);
+                        }
                         getMessagesStorage().markMessageAsSendError(newMsgObj, scheduled ? 1 : 0);
                         newMsgObj.send_state = MessageObject.MESSAGE_SEND_STATE_SEND_ERROR;
                         if (error != null && error.text != null && error.text.startsWith("ALLOW_PAYMENT_REQUIRED_")) {

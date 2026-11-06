@@ -1,0 +1,3104 @@
+{
+  "cases": [
+    {
+      "name": "empty",
+      "a": {
+        "v": 1,
+        "account": "12345",
+        "folders": []
+      },
+      "b": {
+        "v": 1,
+        "account": "12345",
+        "folders": []
+      },
+      "expected": {
+        "v": 1,
+        "account": "12345",
+        "folders": []
+      },
+      "visibleOrder": [],
+      "expectedWire": "{\"account\":\"12345\",\"folders\":[],\"v\":1}"
+    },
+    {
+      "name": "independent_creations",
+      "a": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ]
+      },
+      "b": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000002",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Home",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          },
+          {
+            "id": "10000000-0000-0000-0000-000000000002",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Home",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ]
+      },
+      "visibleOrder": [
+        "local:10000000-0000-0000-0000-000000000001",
+        "local:10000000-0000-0000-0000-000000000002"
+      ],
+      "expectedWire": "{\"account\":\"12345\",\"folders\":[{\"fields\":{\"appearance\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"color\":null,\"emoji\":\"\"}},\"pinned\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":[]},\"rules\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"bots\":true,\"channels\":true,\"contacts\":true,\"exclude\":[],\"excludeArchived\":false,\"excludeMuted\":false,\"excludeRead\":false,\"groups\":true,\"include\":[],\"nonContacts\":true,\"onlyArchived\":false}},\"title\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"entities\":[],\"noAnimate\":false,\"text\":\"Work\"}}},\"id\":\"10000000-0000-0000-0000-000000000001\"},{\"fields\":{\"appearance\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"color\":null,\"emoji\":\"\"}},\"pinned\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":[]},\"rules\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"bots\":true,\"channels\":true,\"contacts\":true,\"exclude\":[],\"excludeArchived\":false,\"excludeMuted\":false,\"excludeRead\":false,\"groups\":true,\"include\":[],\"nonContacts\":true,\"onlyArchived\":false}},\"title\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"entities\":[],\"noAnimate\":false,\"text\":\"Home\"}}},\"id\":\"10000000-0000-0000-0000-000000000002\"}],\"v\":1}"
+    },
+    {
+      "name": "disjoint_fields",
+      "a": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "2",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "New name",
+                  "entities": [],
+                  "noAnimate": true
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ]
+      },
+      "b": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "2",
+                "device": "00000000-0000-0000-0000-000000000002",
+                "value": {
+                  "emoji": "🚀",
+                  "color": 2
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "2",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "New name",
+                  "entities": [],
+                  "noAnimate": true
+                }
+              },
+              "appearance": {
+                "clock": "2",
+                "device": "00000000-0000-0000-0000-000000000002",
+                "value": {
+                  "emoji": "🚀",
+                  "color": 2
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ]
+      },
+      "visibleOrder": [
+        "local:10000000-0000-0000-0000-000000000001"
+      ],
+      "expectedWire": "{\"account\":\"12345\",\"folders\":[{\"fields\":{\"appearance\":{\"clock\":\"2\",\"device\":\"00000000-0000-0000-0000-000000000002\",\"value\":{\"color\":2,\"emoji\":\"🚀\"}},\"pinned\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":[]},\"rules\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"bots\":true,\"channels\":true,\"contacts\":true,\"exclude\":[],\"excludeArchived\":false,\"excludeMuted\":false,\"excludeRead\":false,\"groups\":true,\"include\":[],\"nonContacts\":true,\"onlyArchived\":false}},\"title\":{\"clock\":\"2\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"entities\":[],\"noAnimate\":true,\"text\":\"New name\"}}},\"id\":\"10000000-0000-0000-0000-000000000001\"}],\"v\":1}"
+    },
+    {
+      "name": "concurrent_rename_device_tie",
+      "a": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "2",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Android",
+                  "entities": [],
+                  "noAnimate": false
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ]
+      },
+      "b": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "2",
+                "device": "00000000-0000-0000-0000-000000000002",
+                "value": {
+                  "text": "Windows",
+                  "entities": [],
+                  "noAnimate": false
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "2",
+                "device": "00000000-0000-0000-0000-000000000002",
+                "value": {
+                  "text": "Windows",
+                  "entities": [],
+                  "noAnimate": false
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ]
+      },
+      "visibleOrder": [
+        "local:10000000-0000-0000-0000-000000000001"
+      ],
+      "expectedWire": "{\"account\":\"12345\",\"folders\":[{\"fields\":{\"appearance\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"color\":null,\"emoji\":\"\"}},\"pinned\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":[]},\"rules\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"bots\":true,\"channels\":true,\"contacts\":true,\"exclude\":[],\"excludeArchived\":false,\"excludeMuted\":false,\"excludeRead\":false,\"groups\":true,\"include\":[],\"nonContacts\":true,\"onlyArchived\":false}},\"title\":{\"clock\":\"2\",\"device\":\"00000000-0000-0000-0000-000000000002\",\"value\":{\"entities\":[],\"noAnimate\":false,\"text\":\"Windows\"}}},\"id\":\"10000000-0000-0000-0000-000000000001\"}],\"v\":1}"
+    },
+    {
+      "name": "clock_above_double_precision",
+      "a": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "9007199254740993",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": [
+                  {
+                    "type": "user",
+                    "id": "123"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "b": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "9007199254740992",
+                "device": "00000000-0000-0000-0000-000000000002",
+                "value": []
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "9007199254740993",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": [
+                  {
+                    "type": "user",
+                    "id": "123"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "visibleOrder": [
+        "local:10000000-0000-0000-0000-000000000001"
+      ],
+      "expectedWire": "{\"account\":\"12345\",\"folders\":[{\"fields\":{\"appearance\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"color\":null,\"emoji\":\"\"}},\"pinned\":{\"clock\":\"9007199254740993\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":[{\"id\":\"123\",\"type\":\"user\"}]},\"rules\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"bots\":true,\"channels\":true,\"contacts\":true,\"exclude\":[],\"excludeArchived\":false,\"excludeMuted\":false,\"excludeRead\":false,\"groups\":true,\"include\":[],\"nonContacts\":true,\"onlyArchived\":false}},\"title\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"entities\":[],\"noAnimate\":false,\"text\":\"Work\"}}},\"id\":\"10000000-0000-0000-0000-000000000001\"}],\"v\":1}"
+    },
+    {
+      "name": "deletion_survives_newer_offline_edit",
+      "a": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            },
+            "deleted": {
+              "clock": "2",
+              "device": "00000000-0000-0000-0000-000000000002",
+              "value": true
+            }
+          }
+        ]
+      },
+      "b": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "999999",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "🔥",
+                  "color": 1
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "999999",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "🔥",
+                  "color": 1
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            },
+            "deleted": {
+              "clock": "2",
+              "device": "00000000-0000-0000-0000-000000000002",
+              "value": true
+            }
+          }
+        ]
+      },
+      "visibleOrder": [],
+      "expectedWire": "{\"account\":\"12345\",\"folders\":[{\"deleted\":{\"clock\":\"2\",\"device\":\"00000000-0000-0000-0000-000000000002\",\"value\":true},\"fields\":{\"appearance\":{\"clock\":\"999999\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"color\":1,\"emoji\":\"🔥\"}},\"pinned\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":[]},\"rules\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"bots\":true,\"channels\":true,\"contacts\":true,\"exclude\":[],\"excludeArchived\":false,\"excludeMuted\":false,\"excludeRead\":false,\"groups\":true,\"include\":[],\"nonContacts\":true,\"onlyArchived\":false}},\"title\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"entities\":[],\"noAnimate\":false,\"text\":\"Work\"}}},\"id\":\"10000000-0000-0000-0000-000000000001\"}],\"v\":1}"
+    },
+    {
+      "name": "unknown_deleted_uuid",
+      "a": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {},
+            "deleted": {
+              "clock": "1",
+              "device": "00000000-0000-0000-0000-000000000001",
+              "value": true
+            }
+          }
+        ]
+      },
+      "b": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            },
+            "deleted": {
+              "clock": "1",
+              "device": "00000000-0000-0000-0000-000000000001",
+              "value": true
+            }
+          }
+        ]
+      },
+      "visibleOrder": [],
+      "expectedWire": "{\"account\":\"12345\",\"folders\":[{\"deleted\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":true},\"fields\":{\"appearance\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"color\":null,\"emoji\":\"\"}},\"pinned\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":[]},\"rules\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"bots\":true,\"channels\":true,\"contacts\":true,\"exclude\":[],\"excludeArchived\":false,\"excludeMuted\":false,\"excludeRead\":false,\"groups\":true,\"include\":[],\"nonContacts\":true,\"onlyArchived\":false}},\"title\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"entities\":[],\"noAnimate\":false,\"text\":\"Work\"}}},\"id\":\"10000000-0000-0000-0000-000000000001\"}],\"v\":1}"
+    },
+    {
+      "name": "concurrent_order",
+      "a": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          },
+          {
+            "id": "10000000-0000-0000-0000-000000000002",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Home",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ],
+        "order": {
+          "clock": "4",
+          "device": "00000000-0000-0000-0000-000000000001",
+          "value": [
+            "local:10000000-0000-0000-0000-000000000001",
+            "remote:2"
+          ]
+        }
+      },
+      "b": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          },
+          {
+            "id": "10000000-0000-0000-0000-000000000002",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Home",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ],
+        "order": {
+          "clock": "4",
+          "device": "00000000-0000-0000-0000-000000000002",
+          "value": [
+            "remote:0",
+            "local:10000000-0000-0000-0000-000000000002",
+            "local:10000000-0000-0000-0000-000000000001"
+          ]
+        }
+      },
+      "expected": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          },
+          {
+            "id": "10000000-0000-0000-0000-000000000002",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Home",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ],
+        "order": {
+          "clock": "4",
+          "device": "00000000-0000-0000-0000-000000000002",
+          "value": [
+            "remote:0",
+            "local:10000000-0000-0000-0000-000000000002",
+            "local:10000000-0000-0000-0000-000000000001"
+          ]
+        }
+      },
+      "visibleOrder": [
+        "remote:0",
+        "local:10000000-0000-0000-0000-000000000002",
+        "local:10000000-0000-0000-0000-000000000001"
+      ],
+      "expectedWire": "{\"account\":\"12345\",\"folders\":[{\"fields\":{\"appearance\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"color\":null,\"emoji\":\"\"}},\"pinned\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":[]},\"rules\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"bots\":true,\"channels\":true,\"contacts\":true,\"exclude\":[],\"excludeArchived\":false,\"excludeMuted\":false,\"excludeRead\":false,\"groups\":true,\"include\":[],\"nonContacts\":true,\"onlyArchived\":false}},\"title\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"entities\":[],\"noAnimate\":false,\"text\":\"Work\"}}},\"id\":\"10000000-0000-0000-0000-000000000001\"},{\"fields\":{\"appearance\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"color\":null,\"emoji\":\"\"}},\"pinned\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":[]},\"rules\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"bots\":true,\"channels\":true,\"contacts\":true,\"exclude\":[],\"excludeArchived\":false,\"excludeMuted\":false,\"excludeRead\":false,\"groups\":true,\"include\":[],\"nonContacts\":true,\"onlyArchived\":false}},\"title\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"entities\":[],\"noAnimate\":false,\"text\":\"Home\"}}},\"id\":\"10000000-0000-0000-0000-000000000002\"}],\"order\":{\"clock\":\"4\",\"device\":\"00000000-0000-0000-0000-000000000002\",\"value\":[\"remote:0\",\"local:10000000-0000-0000-0000-000000000002\",\"local:10000000-0000-0000-0000-000000000001\"]},\"v\":1}"
+    },
+    {
+      "name": "equal_stamp_deterministic_value",
+      "a": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "2",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "𐀀",
+                  "entities": [],
+                  "noAnimate": false
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ]
+      },
+      "b": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "2",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "",
+                  "entities": [],
+                  "noAnimate": false
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "2",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "",
+                  "entities": [],
+                  "noAnimate": false
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ]
+      },
+      "visibleOrder": [
+        "local:10000000-0000-0000-0000-000000000001"
+      ],
+      "expectedWire": "{\"account\":\"12345\",\"folders\":[{\"fields\":{\"appearance\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"color\":null,\"emoji\":\"\"}},\"pinned\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":[]},\"rules\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"bots\":true,\"channels\":true,\"contacts\":true,\"exclude\":[],\"excludeArchived\":false,\"excludeMuted\":false,\"excludeRead\":false,\"groups\":true,\"include\":[],\"nonContacts\":true,\"onlyArchived\":false}},\"title\":{\"clock\":\"2\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"entities\":[],\"noAnimate\":false,\"text\":\"\"}}},\"id\":\"10000000-0000-0000-0000-000000000001\"}],\"v\":1}"
+    },
+    {
+      "name": "unicode_and_control_text",
+      "a": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Русский / \"emoji 🚀\"\nline",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ]
+      },
+      "b": {
+        "v": 1,
+        "account": "12345",
+        "folders": []
+      },
+      "expected": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Русский / \"emoji 🚀\"\nline",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ]
+      },
+      "visibleOrder": [
+        "local:10000000-0000-0000-0000-000000000001"
+      ],
+      "expectedWire": "{\"account\":\"12345\",\"folders\":[{\"fields\":{\"appearance\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"color\":null,\"emoji\":\"\"}},\"pinned\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":[]},\"rules\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"bots\":true,\"channels\":true,\"contacts\":true,\"exclude\":[],\"excludeArchived\":false,\"excludeMuted\":false,\"excludeRead\":false,\"groups\":true,\"include\":[],\"nonContacts\":true,\"onlyArchived\":false}},\"title\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"entities\":[],\"noAnimate\":false,\"text\":\"Русский / \\\"emoji 🚀\\\"\\u000aline\"}}},\"id\":\"10000000-0000-0000-0000-000000000001\"}],\"v\":1}"
+    },
+    {
+      "name": "deletion_and_later_replica",
+      "a": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "4",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            },
+            "deleted": {
+              "clock": "2",
+              "device": "00000000-0000-0000-0000-000000000002",
+              "value": true
+            }
+          }
+        ]
+      },
+      "b": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "100",
+                "device": "00000000-0000-0000-0000-000000000002",
+                "value": {
+                  "text": "Offline",
+                  "entities": [],
+                  "noAnimate": false
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "100",
+                "device": "00000000-0000-0000-0000-000000000002",
+                "value": {
+                  "text": "Offline",
+                  "entities": [],
+                  "noAnimate": false
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "4",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            },
+            "deleted": {
+              "clock": "2",
+              "device": "00000000-0000-0000-0000-000000000002",
+              "value": true
+            }
+          }
+        ]
+      },
+      "visibleOrder": [],
+      "expectedWire": "{\"account\":\"12345\",\"folders\":[{\"deleted\":{\"clock\":\"2\",\"device\":\"00000000-0000-0000-0000-000000000002\",\"value\":true},\"fields\":{\"appearance\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"color\":null,\"emoji\":\"\"}},\"pinned\":{\"clock\":\"4\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":[]},\"rules\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"bots\":true,\"channels\":true,\"contacts\":true,\"exclude\":[],\"excludeArchived\":false,\"excludeMuted\":false,\"excludeRead\":false,\"groups\":true,\"include\":[],\"nonContacts\":true,\"onlyArchived\":false}},\"title\":{\"clock\":\"100\",\"device\":\"00000000-0000-0000-0000-000000000002\",\"value\":{\"entities\":[],\"noAnimate\":false,\"text\":\"Offline\"}}},\"id\":\"10000000-0000-0000-0000-000000000001\"}],\"v\":1}"
+    },
+    {
+      "name": "independent_rules_and_pins",
+      "a": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "2",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": false,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [
+                    {
+                      "type": "channel",
+                      "id": "9876543210"
+                    }
+                  ],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ]
+      },
+      "b": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "2",
+                "device": "00000000-0000-0000-0000-000000000002",
+                "value": [
+                  {
+                    "type": "channel",
+                    "id": "9876543210"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "2",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": false,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [
+                    {
+                      "type": "channel",
+                      "id": "9876543210"
+                    }
+                  ],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "2",
+                "device": "00000000-0000-0000-0000-000000000002",
+                "value": [
+                  {
+                    "type": "channel",
+                    "id": "9876543210"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "visibleOrder": [
+        "local:10000000-0000-0000-0000-000000000001"
+      ],
+      "expectedWire": "{\"account\":\"12345\",\"folders\":[{\"fields\":{\"appearance\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"color\":null,\"emoji\":\"\"}},\"pinned\":{\"clock\":\"2\",\"device\":\"00000000-0000-0000-0000-000000000002\",\"value\":[{\"id\":\"9876543210\",\"type\":\"channel\"}]},\"rules\":{\"clock\":\"2\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"bots\":true,\"channels\":true,\"contacts\":false,\"exclude\":[],\"excludeArchived\":false,\"excludeMuted\":false,\"excludeRead\":false,\"groups\":true,\"include\":[{\"id\":\"9876543210\",\"type\":\"channel\"}],\"nonContacts\":true,\"onlyArchived\":false}},\"title\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"entities\":[],\"noAnimate\":false,\"text\":\"Work\"}}},\"id\":\"10000000-0000-0000-0000-000000000001\"}],\"v\":1}"
+    }
+  ],
+  "invalid": [
+    {
+      "name": "unsupported_schema",
+      "document": {
+        "v": 2,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "noncanonical_account",
+      "document": {
+        "v": 1,
+        "account": "012345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "duplicate_uuid",
+      "document": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          },
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "clock_overflow",
+      "document": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "9223372036854775808",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "numeric_clock",
+      "document": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": 2,
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "uuid_suffix",
+      "document": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001\n",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "incomplete_live_folder",
+      "document": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "false_tombstone",
+      "document": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            },
+            "deleted": {
+              "clock": "1",
+              "device": "00000000-0000-0000-0000-000000000001",
+              "value": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "duplicate_order_entry",
+      "document": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ],
+        "order": {
+          "clock": "1",
+          "device": "00000000-0000-0000-0000-000000000001",
+          "value": [
+            "local:10000000-0000-0000-0000-000000000001",
+            "local:10000000-0000-0000-0000-000000000001"
+          ]
+        }
+      }
+    },
+    {
+      "name": "invalid_remote_reference",
+      "document": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ],
+        "order": {
+          "clock": "1",
+          "device": "00000000-0000-0000-0000-000000000001",
+          "value": [
+            "remote:02"
+          ]
+        }
+      }
+    },
+    {
+      "name": "unknown_property",
+      "document": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ],
+        "unknown": true
+      }
+    },
+    {
+      "name": "unknown_field",
+      "document": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              },
+              "extra": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": true
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "negative_peer",
+      "document": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": [
+                  {
+                    "type": "user",
+                    "id": "-7"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "numeric_peer_id",
+      "document": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": [
+                  {
+                    "type": "user",
+                    "id": 7
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "secret_peer",
+      "document": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": [
+                  {
+                    "type": "secret",
+                    "id": "7"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "duplicate_peer",
+      "document": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": [
+                  {
+                    "type": "user",
+                    "id": "7"
+                  },
+                  {
+                    "type": "user",
+                    "id": "7"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "conflicting_archive_rules",
+      "document": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "Work",
+                  "noAnimate": false,
+                  "entities": []
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": true,
+                  "onlyArchived": true,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "entity_splits_surrogate",
+      "document": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "🚀X",
+                  "noAnimate": false,
+                  "entities": [
+                    {
+                      "type": "bold",
+                      "offset": 1,
+                      "length": 1
+                    }
+                  ]
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "oversized_entity",
+      "document": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "X",
+                  "noAnimate": false,
+                  "entities": [
+                    {
+                      "type": "bold",
+                      "offset": 0,
+                      "length": 2
+                    }
+                  ]
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "missing_emoji_id",
+      "document": {
+        "v": 1,
+        "account": "12345",
+        "folders": [
+          {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "fields": {
+              "title": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "text": "🚀",
+                  "noAnimate": false,
+                  "entities": [
+                    {
+                      "type": "customEmoji",
+                      "offset": 0,
+                      "length": 2
+                    }
+                  ]
+                }
+              },
+              "appearance": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "emoji": "",
+                  "color": null
+                }
+              },
+              "rules": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": {
+                  "contacts": true,
+                  "nonContacts": true,
+                  "groups": true,
+                  "channels": true,
+                  "bots": true,
+                  "excludeMuted": false,
+                  "excludeRead": false,
+                  "excludeArchived": false,
+                  "onlyArchived": false,
+                  "include": [],
+                  "exclude": []
+                }
+              },
+              "pinned": {
+                "clock": "1",
+                "device": "00000000-0000-0000-0000-000000000001",
+                "value": []
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "replica": {
+    "seedWire": "{\"account\":\"12345\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"document\":\"{\\\"account\\\":\\\"12345\\\",\\\"folders\\\":[],\\\"v\\\":1}\",\"ids\":{},\"v\":1}",
+    "capturedWire": "{\"account\":\"12345\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"document\":\"{\\\"account\\\":\\\"12345\\\",\\\"folders\\\":[{\\\"fields\\\":{\\\"appearance\\\":{\\\"clock\\\":\\\"1\\\",\\\"device\\\":\\\"00000000-0000-0000-0000-000000000001\\\",\\\"value\\\":{\\\"color\\\":null,\\\"emoji\\\":\\\"\\\"}},\\\"pinned\\\":{\\\"clock\\\":\\\"1\\\",\\\"device\\\":\\\"00000000-0000-0000-0000-000000000001\\\",\\\"value\\\":[]},\\\"rules\\\":{\\\"clock\\\":\\\"1\\\",\\\"device\\\":\\\"00000000-0000-0000-0000-000000000001\\\",\\\"value\\\":{\\\"bots\\\":true,\\\"channels\\\":true,\\\"contacts\\\":true,\\\"exclude\\\":[],\\\"excludeArchived\\\":false,\\\"excludeMuted\\\":false,\\\"excludeRead\\\":false,\\\"groups\\\":true,\\\"include\\\":[],\\\"nonContacts\\\":true,\\\"onlyArchived\\\":false}},\\\"title\\\":{\\\"clock\\\":\\\"1\\\",\\\"device\\\":\\\"00000000-0000-0000-0000-000000000001\\\",\\\"value\\\":{\\\"entities\\\":[],\\\"noAnimate\\\":false,\\\"text\\\":\\\"Work\\\"}}},\\\"id\\\":\\\"10000000-0000-0000-0000-000000000001\\\"}],\\\"order\\\":{\\\"clock\\\":\\\"2\\\",\\\"device\\\":\\\"00000000-0000-0000-0000-000000000001\\\",\\\"value\\\":[\\\"remote:0\\\",\\\"local:10000000-0000-0000-0000-000000000001\\\"]},\\\"v\\\":1}\",\"ids\":{\"10000000-0000-0000-0000-000000000001\":1000},\"v\":1}"
+  },
+  "crypto": {
+    "keyHex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+    "workspace": "00000000-0000-0000-0000-000000000001",
+    "documentWire": "{\"account\":\"12345\",\"folders\":[{\"fields\":{\"appearance\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"color\":null,\"emoji\":\"\"}},\"pinned\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":[]},\"rules\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"bots\":true,\"channels\":true,\"contacts\":true,\"exclude\":[],\"excludeArchived\":false,\"excludeMuted\":false,\"excludeRead\":false,\"groups\":true,\"include\":[],\"nonContacts\":true,\"onlyArchived\":false}},\"title\":{\"clock\":\"1\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":{\"entities\":[],\"noAnimate\":false,\"text\":\"Work\"}}},\"id\":\"10000000-0000-0000-0000-000000000001\"}],\"order\":{\"clock\":\"2\",\"device\":\"00000000-0000-0000-0000-000000000001\",\"value\":[\"remote:0\",\"local:10000000-0000-0000-0000-000000000001\"]},\"v\":1}",
+    "envelopeHex": "4158465301000102030405060708090a0b3c20b778a68ab775f963ada980db4b59b6f4ab16961433185d1596a727327b906779cb90cbb230a20f861e9df8e2494a8f3703e878ecd8f85cfb457a73c1cfccc11eea58b7b450087f318854cdbf3ed808baf952464e6358cdcdb3fc48c089a0fbc869d68971f82aae2c0e827845114f8b454e8995a449ef28dd6db6a0850162d42022fcdaa2a73f24c32dcc52b025e00cd6c148483db13ae53186129ef0d395b1f4f27a8a94ee448552ffd6fde4e3cdf4adaf00b189438c55eff0f741f59ac3237cbad73dede6f91a66e3d68a6ce9b4d14ec8460d308ac141a0b8eb633eee963646f695bd7d7e097035cd64d0625e6bd3b1da19f253e2872d495651a7be26e462b891f5bfe06a0e47ef4237871d0a27ea84fafdadbbb19f41025d613ac4977b3133ee788af5fe27a20c0b7826b7d6b2f4bf3e7c73efed75f7456e34ad49379cacb95d49e3011687c68c080267a76f17f636f5e7f37af1692ad70b44b7c53a8a3c03dbbcfd371ebe44ca8619cce84e0ae1857c159b956580ed865cb5aa323d109fe5a1b5f462fffec4089d134b2477ca977f09dfbd1a34b55163bb6a6f83c335750f330e91b430168282ba33938bd5897f0c367d69f353c7ddcd9198e3873d111419c2a8ca329d47b047cc759ffbbb1206e41f33a0ee6d1e79b1c8c574d3a4db77835040e5f0b7a727cf60afd2ca8cece3c9ace7118c9549c36ef47ffd93717fcd0389939d0bfe666397c3195f6408dbe29001185e4be284bf5570079a642e805c2206b7dc779d3b00e4678bfa5f6bdd769fa70f9df5445428cb08b6eb4cff3451d7b12c516e4325a4c9d3f0a6a216da2bb4f0db54e79882d77bdf8719be4ab1c425bb08ae12cce217a1fed47f14bd7704ee390116d5ddfd21303822ede6971a15e1a07086f328fc27fe5d16df0f3da45e50b9812a19a0dc70ea8fd4e0d4bab0deb965426a2f1b2e951fb3997a2d5de70463ff9f45e5e6d5a1854142a015322b7a97ee633650fd09562e7788fac608b7497b0e78987ae8d2e7cfa0be89b0e0f69e620dfbdde501ec61afeb7394f227f7616315358e75cacd86c295a3ab08f9ee87d1306dfe30e1c7acb46fd65b6eaacfbceb611390b0c5b647ded463b08da6a880e36b3747f13f82628d9fec850c12f0a090b0fec109134837d51c634b107398"
+  }
+}

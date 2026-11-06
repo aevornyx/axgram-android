@@ -4146,6 +4146,9 @@ public class Theme {
             }
         }
 
+        registerAxGlassTheme("AxGram Glass Light", "axgram_glass_light.attheme", false);
+        registerAxGlassTheme("AxGram Glass Dark", "axgram_glass_dark.attheme", true);
+
         sortThemes();
 
         ThemeInfo applyingTheme = null;
@@ -5736,6 +5739,25 @@ public class Theme {
         return null;
     }
 
+    private static void registerAxGlassTheme(String name, String asset, boolean dark) {
+        ThemeInfo info = new ThemeInfo();
+        info.name = name;
+        info.assetName = asset;
+        info.isDark = dark ? ThemeInfo.DARK : ThemeInfo.LIGHT;
+        info.previewBackgroundColor = dark ? 0xff10161d : 0xffedf3f9;
+        info.previewInColor = dark ? 0xff27313d : 0xfff6f9fd;
+        info.previewOutColor = dark ? 0xff244451 : 0xffcce5f9;
+        info.sortIndex = dark ? 11 : 10;
+        themes.add(info);
+        themesDict.put(name, info);
+    }
+
+    public static void setDayNightThemes(ThemeInfo day, ThemeInfo night) {
+        if (day == null || night == null) return;
+        currentDayTheme = day;
+        currentNightTheme = night;
+    }
+
     public static ThemeInfo getTheme(String key) {
         return themesDict.get(key);
     }
@@ -6204,6 +6226,10 @@ public class Theme {
             shouldDrawGradientIcons = accent.fillAccentColors(currentColorsNoAccent, currentColors);
         }
         applyCalculatedTableColors(currentColorsNoAccent, currentColors, currentTheme.isDark());
+        if ("AxGram Glass Light".equals(currentTheme.getKey()) || "AxGram Glass Dark".equals(currentTheme.getKey())) {
+            one.axgram.core.appearance.AxAppearanceColors.apply(currentColors, currentTheme.isDark(),
+                    one.axgram.core.appearance.AxAppearance.accentColor());
+        }
         applyCalculatedArticleCodeColors(currentColorsNoAccent, currentColors, currentTheme.isDark());
         if (!messages) {
             boolean async = !(LaunchActivity.getLastFragment() instanceof ChatActivity);
@@ -8043,12 +8069,14 @@ public class Theme {
         dialogs_tagTextPaint.setTextSize(dp(10));
         dialogs_searchNamePaint.setTextSize(dp(16));
         dialogs_searchNameEncryptedPaint.setTextSize(dp(16));
+        one.axgram.core.appearance.AxChatListStyle.applyDialogTypography(true);
     }
 
     public static void applyDialogsTheme() {
         if (dialogs_namePaint == null) {
             return;
         }
+        one.axgram.core.appearance.AxChatListStyle.applyDialogTypography(false);
         for (int a = 0; a < 2; a++) {
             dialogs_namePaint[a].setColor(getColor(key_chats_name));
             dialogs_nameEncryptedPaint[a].setColor(getColor(key_chats_secretName));
@@ -9053,7 +9081,7 @@ public class Theme {
         if (context == null) {
             return null;
         }
-        Drawable drawable = context.getResources().getDrawable(resId).mutate();
+        Drawable drawable = one.axgram.core.appearance.AxIconPack.drawable(context, resId);
         drawable.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
         return drawable;
     }

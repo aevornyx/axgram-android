@@ -245,6 +245,19 @@ public class MessagesStorage extends BaseController {
         return storageQueue;
     }
 
+    public void applyAxFolderStorageSnapshot(long owner, java.util.List<MessagesController.DialogFilter> snapshot) {
+        if (Thread.currentThread() != storageQueue || owner != getUserConfig().getClientUserId()) {
+            throw new IllegalStateException("Folder storage owner or queue changed");
+        }
+        dialogFilters.clear();
+        dialogFiltersMap.clear();
+        for (MessagesController.DialogFilter filter : snapshot) {
+            dialogFilters.add(filter);
+            dialogFiltersMap.put(filter.id, filter);
+        }
+        calcUnreadCounters(true);
+    }
+
     @UiThread
     public void bindTaskToGuid(Runnable task, int guid) {
         ArrayList<Runnable> arrayList = tasks.get(guid);
@@ -2582,6 +2595,7 @@ public class MessagesStorage extends BaseController {
                 while (filtersCursor.next()) {
                     MessagesController.DialogFilter filter = new MessagesController.DialogFilter();
                     filter.id = filtersCursor.intValue(0);
+                    filter.axSyncUuid = one.axgram.core.folders.AxFolderIdentity.load(database, getUserConfig().getClientUserId(), filter.id);
                     filter.order = filtersCursor.intValue(1);
                     filter.pendingUnreadCount = filter.unreadCount = -1;//filtersCursor.intValue(2);
                     filter.flags = filtersCursor.intValue(3);
@@ -3248,6 +3262,11 @@ public class MessagesStorage extends BaseController {
                 state = null;
                 database.commitTransaction();
             }
+            filter.axSyncUuid = one.axgram.core.folders.AxFolderIdentity.save(database, getUserConfig().getClientUserId(), filter.id, filter.axSyncUuid);
+            if (filter.id >= 1000 && filter.axSyncUuid != null) {
+                one.axgram.core.folders.AxFolderIdReservations reservations = getMessagesController().getAxFolderReservations();
+                if (reservations != null) reservations.confirmSaved(filter, filter.id);
+            }
         } catch (Exception e) {
             checkSQLException(e);
         } finally {
@@ -3715,22 +3734,37 @@ public class MessagesStorage extends BaseController {
     }
 
     private void deleteDialogFilterInternal(MessagesController.DialogFilter filter) {
+        deleteDialogFilterInternal(filter.id);
+    }
+
+    private void deleteDialogFilterInternal(int filterId) {
         try {
-            dialogFilters.remove(filter);
-            dialogFiltersMap.remove(filter.id);
-            database.executeFast("DELETE FROM dialog_filter_neko WHERE id = " + filter.id).stepThis().dispose();
-            database.executeFast("DELETE FROM dialog_filter_ep WHERE id = " + filter.id).stepThis().dispose();
-            database.executeFast("DELETE FROM dialog_filter_pin_v2 WHERE id = " + filter.id).stepThis().dispose();
+            MessagesController.DialogFilter cached = dialogFiltersMap.get(filterId);
+            if (cached != null) dialogFilters.remove(cached);
+            dialogFiltersMap.remove(filterId);
+            database.executeFast("DELETE FROM dialog_filter_neko WHERE id = " + filterId).stepThis().dispose();
+            database.executeFast("DELETE FROM dialog_filter_ep WHERE id = " + filterId).stepThis().dispose();
+            database.executeFast("DELETE FROM dialog_filter_pin_v2 WHERE id = " + filterId).stepThis().dispose();
+            one.axgram.core.folders.AxFolderIdentity.remove(database, getUserConfig().getClientUserId(), filterId);
+            if (filterId >= 1000) {
+                one.axgram.core.folders.AxFolderIdReservations reservations = getMessagesController().getAxFolderReservations();
+                if (reservations != null) reservations.confirmDeleted(filterId);
+            }
         } catch (Exception e) {
             checkSQLException(e);
         }
     }
 
     public void deleteDialogFilter(MessagesController.DialogFilter filter) {
-        storageQueue.postRunnable(() -> deleteDialogFilterInternal(filter));
+        one.axgram.core.folders.AxFolderUiCoordinator coordinator = getMessagesController().getAxFolderUiCoordinator();
+        if (filter.id >= 1000 && coordinator != null && coordinator.remove(filter)) return;
+        int filterId = filter.id;
+        storageQueue.postRunnable(() -> deleteDialogFilterInternal(filterId));
     }
 
     public void saveDialogFilter(MessagesController.DialogFilter filter, boolean atBegin, boolean peers) {
+        one.axgram.core.folders.AxFolderUiCoordinator coordinator = getMessagesController().getAxFolderUiCoordinator();
+        if (filter.id >= 1000 && coordinator != null && coordinator.captureNativeChange()) return;
         storageQueue.postRunnable(() -> {
             saveDialogFilterInternal(filter, atBegin, peers);
             calcUnreadCounters(false);
@@ -3787,6 +3821,8 @@ public class MessagesStorage extends BaseController {
     }
 
     public void saveDialogFiltersOrder() {
+        one.axgram.core.folders.AxFolderUiCoordinator coordinator = getMessagesController().getAxFolderUiCoordinator();
+        if (coordinator != null && coordinator.captureNativeChange()) return;
         ArrayList<MessagesController.DialogFilter> filtersFinal = new ArrayList<>(getMessagesController().dialogFilters);
         storageQueue.postRunnable(() -> {
             dialogFilters.clear();
@@ -4516,12 +4552,13 @@ public class MessagesStorage extends BaseController {
             if (messagesOnly != 3) {
                 try {
                     org.telegram.SQLite.SQLiteCursor axCursor =
-                            database.queryFinalized("SELECT data FROM messages_v2 WHERE uid = " + did);
+                            database.queryFinalized("SELECT data, send_state FROM messages_v2 WHERE uid = " + did);
                     int axSaved = 0;
                     while (axCursor.next()) {
                         NativeByteBuffer axData = axCursor.byteBufferValue(0);
                         if (axData != null) {
-                            TLRPC.Message axMsg = TLRPC.Message.TLdeserialize(axData, axData.readInt32(false), false);
+                            TLRPC.Message axMsg = one.axgram.core.AxStoredMessageReader.read(
+                                    axData, getUserConfig().getClientUserId(), axCursor.intValue(1));
                             axData.reuse();
                             if (axMsg != null) {
                                 one.axgram.core.AxDeletedMessages.getInstance().saveMessage(currentAccount, did, axMsg);
@@ -12004,6 +12041,33 @@ public class MessagesStorage extends BaseController {
 
     }
 
+    private void archiveMessageEdit(TLRPC.Message message, long ownerId) {
+        if (ownerId <= 0 || message == null || message.id <= 0 || message.edit_date <= 0 || message.send_state != 0
+                || !(message instanceof TLRPC.TL_message)) return;
+        long dialogId = MessageObject.getDialogId(message);
+        if (dialogId == 0 || DialogObject.isEncryptedDialog(dialogId)) return;
+        SQLiteCursor editCursor = null;
+        NativeByteBuffer data = null;
+        try {
+            editCursor = database.queryFinalized("SELECT data, send_state FROM messages_v2 WHERE uid = ? AND mid = ?", dialogId, message.id);
+            if (editCursor.next()) {
+                data = editCursor.byteBufferValue(0);
+                if (data != null) {
+                    TLRPC.Message previous = TLRPC.Message.TLdeserialize(data, data.readInt32(false), false);
+                    if (previous != null) {
+                        previous = one.axgram.core.AxMessageHistory.readPrevious(previous, data, ownerId, editCursor.intValue(1));
+                        one.axgram.core.AxMessageHistory.getInstance().record(ownerId, dialogId, previous, message);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+        } finally {
+            if (data != null) data.reuse();
+            if (editCursor != null) editCursor.dispose();
+        }
+    }
+
     private void putMessagesInternal(ArrayList<TLRPC.Message> messages, boolean withTransaction, boolean doNotUpdateDialogDate, int downloadMask, boolean ifNoLastMessage, int mode, long threadMessageId) {
         if (messages != null) {
             ArrayList<TL_ephemeral.EphemeralMessage> ephemeralMessages = null;
@@ -12328,6 +12392,7 @@ public class MessagesStorage extends BaseController {
                 for (int a = 0; a < messages.size(); a++) {
                     TLRPC.Message message = messages.get(a);
 
+                    if (mode == ChatActivity.MODE_DEFAULT) archiveMessageEdit(message, selfId);
                     int messageId = message.id;
                     MessageObject.getDialogId(message);
                     long topicId = MessageObject.getTopicId(currentAccount, message, getForumTypeFlags(message.dialog_id));
@@ -14740,13 +14805,14 @@ public class MessagesStorage extends BaseController {
                 // === AxGram anti-delete: save incoming messages before they are removed ===
                 try {
                     org.telegram.SQLite.SQLiteCursor axCursor = dialogId != 0
-                            ? database.queryFinalized("SELECT uid, data FROM messages_v2 WHERE mid IN(" + ids + ") AND uid = " + dialogId)
-                            : database.queryFinalized("SELECT uid, data FROM messages_v2 WHERE mid IN(" + ids + ") AND is_channel = 0");
+                            ? database.queryFinalized("SELECT uid, data, send_state FROM messages_v2 WHERE mid IN(" + ids + ") AND uid = " + dialogId)
+                            : database.queryFinalized("SELECT uid, data, send_state FROM messages_v2 WHERE mid IN(" + ids + ") AND is_channel = 0");
                     while (axCursor.next()) {
                         long axDid = axCursor.longValue(0);
                         NativeByteBuffer axData = axCursor.byteBufferValue(1);
                         if (axData != null) {
-                            TLRPC.Message axMsg = TLRPC.Message.TLdeserialize(axData, axData.readInt32(false), false);
+                            TLRPC.Message axMsg = one.axgram.core.AxStoredMessageReader.read(
+                                    axData, currentUser, axCursor.intValue(2));
                             axData.reuse();
                             if (axMsg != null) {
                                 // AxGram: save all deleted messages incl. our own (media etc.), so they persist after restart
@@ -15499,12 +15565,13 @@ public class MessagesStorage extends BaseController {
         // поэтому старые посты канала пропадали без следа. Сохраняем их заранее.
         try {
             org.telegram.SQLite.SQLiteCursor axCursor = database.queryFinalized(
-                    String.format(Locale.US, "SELECT data FROM messages_v2 WHERE uid = %d AND mid <= %d", -channelId, mid));
+                    String.format(Locale.US, "SELECT data, send_state FROM messages_v2 WHERE uid = %d AND mid <= %d", -channelId, mid));
             int axSaved = 0;
             while (axCursor.next()) {
                 NativeByteBuffer axData = axCursor.byteBufferValue(0);
                 if (axData != null) {
-                    TLRPC.Message axMsg = TLRPC.Message.TLdeserialize(axData, axData.readInt32(false), false);
+                    TLRPC.Message axMsg = one.axgram.core.AxStoredMessageReader.read(
+                            axData, getUserConfig().getClientUserId(), axCursor.intValue(1));
                     axData.reuse();
                     if (axMsg != null) {
                         one.axgram.core.AxDeletedMessages.getInstance().saveMessage(currentAccount, -channelId, axMsg);
@@ -16464,6 +16531,7 @@ public class MessagesStorage extends BaseController {
                             channelId = message.peer_id.channel_id;
                         }
 
+                        if (mode == ChatActivity.MODE_DEFAULT) archiveMessageEdit(message, selfId);
                         if (load_type == -2) {
                             cursor = database.queryFinalized(String.format(Locale.US, "SELECT mid, data, ttl, mention, read_state, send_state, custom_params FROM messages_v2 WHERE mid = %d AND uid = %d", message.id, MessageObject.getDialogId(message)));
                             boolean exist;

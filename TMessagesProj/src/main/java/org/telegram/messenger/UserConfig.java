@@ -23,14 +23,14 @@ import org.telegram.tgnet.tl.TL_account;
 import java.util.Arrays;
 
 import one.axgram.core.AxCoreConfig;
-import one.axgram.core.helpers.remote.ExtendedHelper;
+import one.axgram.core.AxAccountSlots;
 
 public class UserConfig extends BaseController {
 
     public static int selectedAccount;
     public final static int MAX_ACCOUNT_DEFAULT_COUNT = 8;
     public final static int MAX_ACCOUNT_PREMIUM_COUNT = 10;
-    public final static int MAX_ACCOUNT_COUNT = 128;
+    public final static int MAX_ACCOUNT_COUNT = AxAccountSlots.CAPACITY;
 
     private final Object sync = new Object();
     private volatile boolean configLoaded;
@@ -128,28 +128,11 @@ public class UserConfig extends BaseController {
     }
 
     public static int getMaxAccountCount() {
-        return hasPremiumOnAccounts() ? MAX_ACCOUNT_PREMIUM_COUNT : MAX_ACCOUNT_DEFAULT_COUNT;
+        return MAX_ACCOUNT_COUNT;
     }
 
     public static int requestAccountSlot() {
-        int availableAccount = -1;
-        for (int a = 0; a < MAX_ACCOUNT_COUNT; a++) {
-            if (!getInstance(a).isClientActivated()) {
-                availableAccount = a;
-                break;
-            }
-        }
-        if (availableAccount < 0) {
-            return -1;
-        }
-
-        if (getActivatedAccountsCount() < getMaxAccountCount()) {
-            return availableAccount;
-        }
-        if (ExtendedHelper.getInstance().hasExtended()) {
-            return availableAccount;
-        }
-        return -1;
+        return AxAccountSlots.findAvailableSlot(a -> getInstance(a).isClientActivated());
     }
 
     public int getNewMessageId() {

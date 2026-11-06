@@ -589,7 +589,7 @@ public class ProfileActionsView extends View {
 
     @Override
     protected boolean verifyDrawable(@NonNull Drawable who) {
-        return super.verifyDrawable(who) || who instanceof LoadingDrawable;
+        return super.verifyDrawable(who) || who instanceof LoadingDrawable || one.axgram.core.appearance.AxIconPack.isPackDrawable(who);
     }
 
     public void beginApplyingActions() {
@@ -1206,9 +1206,11 @@ public class ProfileActionsView extends View {
             } else {
                 drawableAnimated = null;
             }
-            drawableFilled = filledRes != 0 ? getResources().getDrawable(filledRes).mutate() : null;
-            drawableOutline = outlineRes != 0 ? getResources().getDrawable(outlineRes).mutate() : null;
+            drawableFilled = filledRes != 0 ? one.axgram.core.appearance.AxIconPack.badge(getContext(), filledRes) : null;
+            drawableOutline = outlineRes != 0 ? one.axgram.core.appearance.AxIconPack.badge(getContext(), outlineRes) : null;
 
+            if (drawableFilled != null) drawableFilled.setCallback(ProfileActionsView.this);
+            if (drawableOutline != null) drawableOutline.setCallback(ProfileActionsView.this);
             checkBounds();
         }
     }

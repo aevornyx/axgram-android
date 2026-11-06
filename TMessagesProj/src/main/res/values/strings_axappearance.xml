@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="AxAppearance">Appearance</string>
+    <string name="AxAppearanceLight">Light glass</string>
+    <string name="AxAppearanceDark">Dark glass</string>
+    <string name="AxAppearanceSystem">Follow system</string>
+    <string name="AxAppearanceNavigation">Glass navigation bar</string>
+    <string name="AxAppearanceInfo">Your existing themes and Telegram settings stay available. You can return to your previous appearance.</string>
+    <string name="AxAppearanceRestore">Restore previous appearance</string>
+    <string name="AxAppearanceTelegram">All Telegram theme settings</string>
+    <string name="AxAppearanceAccent">Accent color</string>
+    <string name="AxAppearanceGlassBlur">Blur behind panels</string>
+    <string name="AxAppearanceTransparency">Panel transparency</string>
+    <string name="AxAppearanceWallpaperBlur">Wallpaper blur</string>
+    <string name="AxAppearanceResetStyle">Reset effects and accent</string>
+    <string name="AxAppearanceDefault">Default</string>
+    <string name="AxAppearanceEffectsInfo">Effects apply to AxGram Glass themes. Wallpaper blur is separate from panel blur and does not blur messages or media. Transparency: 0% is solid, 80% is highly transparent.</string>
+    <string name="AxAppearanceApply">Apply</string>
+    <string name="AxAppearanceListWallpaper">Wallpaper in chat list</string>
+    <string name="AxAppearanceIcons">AxGram icons</string>
+    <string name="AxAppearanceThemesIcons">Themes, wallpapers and icons</string>
+    <string name="AxSettingsFunctions">AxGram features</string>
+    <string name="AxSettingsTelegram">Telegram settings</string>
+</resources>

@@ -20,8 +20,8 @@
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:actionBarStyle">@style/ActionBar.Transparent.TMessages.Start</item>
-        <item name="android:colorBackground">@android:color/white</item>
-        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:colorBackground">@color/ax_splash_surface</item>
+        <item name="android:windowBackground">@color/ax_splash_surface</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:colorPrimaryDark">#426482</item>
         <item name="android:colorPrimary">#527da3</item>

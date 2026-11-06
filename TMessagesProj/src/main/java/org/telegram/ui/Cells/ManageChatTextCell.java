@@ -120,7 +120,7 @@ public class ManageChatTextCell extends FrameLayout {
             valueTextView.setVisibility(INVISIBLE);
         }
         imageView.setPadding(0, AndroidUtilities.dp(paddingTop), 0, 0);
-        imageView.setImageResource(resId);
+        one.axgram.core.appearance.AxIconPack.bind(imageView, resId);
         divider = needDivider;
         setWillNotDraw(!divider);
     }

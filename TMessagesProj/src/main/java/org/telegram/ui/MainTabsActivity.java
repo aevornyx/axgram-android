@@ -1,9 +1,12 @@
 package org.telegram.ui;
 
+import one.axgram.core.appearance.AxAppearance;
+
+import one.axgram.core.AxAccountLimitAlert;
+
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.AndroidUtilities.lerp;
 import static org.telegram.messenger.LocaleController.getString;
-import static org.telegram.ui.Components.Premium.LimitReachedBottomSheet.TYPE_ACCOUNTS;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -71,7 +74,6 @@ import org.telegram.ui.Components.FolderDrawable;
 import org.telegram.ui.Components.HintsController;
 import org.telegram.ui.Components.ItemOptions;
 import org.telegram.ui.Components.LayoutHelper;
-import org.telegram.ui.Components.Premium.LimitReachedBottomSheet;
 import org.telegram.ui.Components.blur3.BlurredBackgroundDrawableViewFactory;
 import org.telegram.ui.Components.blur3.BlurredBackgroundWithFadeDrawable;
 import org.telegram.ui.Components.blur3.RenderNodeWithHash;
@@ -436,6 +438,7 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         tabsViewBackground.setRadius(dp(tabHeight / 2f));
         tabsViewBackground.setPadding(dp(tabMargin - 0.334f));
         tabsView.setBackground(tabsViewBackground);
+        tabsView.setAxGlassEnabled(AxAppearance.useGlassNavigation() && !isTextFreeMode());
 
         BlurredBackgroundDrawableViewFactory iBlur3FactoryFade = new BlurredBackgroundDrawableViewFactory(iBlur3SourceColor);
         iBlur3FactoryFade.setSourceRootView(viewPositionWatcher, contentView);
@@ -449,8 +452,11 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
 
         tabsViewWrapper = new FrameLayout(context);
         tabsViewWrapper.setOnClickListener(v -> {});
-        tabsViewWrapper.addView(tabsView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, tabHeightWithMargins, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL));
+        tabsViewWrapper.addView(tabsView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT,
+                tabHeightWithMargins + (AxAppearance.useGlassNavigation() && !isTextFreeMode() ? one.axgram.core.appearance.AxGlassNavigationGeometry.EXTRA_TOP_DP : 0),
+                Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL));
         tabsViewWrapper.setClipToPadding(false);
+        tabsViewWrapper.setClipChildren(false);
         contentView.addView(tabsViewWrapper, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM));
 
         updateLayoutWrapper = new UpdateLayoutWrapper(context);
@@ -697,7 +703,7 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
                 if (availableAccount >= 0) {
                     fragment.presentFragment(new LoginActivity(availableAccount));
                 } else {
-                    fragment.showDialog(new LimitReachedBottomSheet(fragment, fragment.getContext(), TYPE_ACCOUNTS, currentAccount, null));
+                    AxAccountLimitAlert.show(fragment);
                 }
             });
         }
@@ -886,7 +892,7 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
 
         if (tabsView != null) {
             final float position = viewPager.getPositionAnimated();
-            setGestureSelectedOverride(position, isDragByGesture);
+            setGestureSelectedOverride(position, isDragByGesture || AxAppearance.useGlassNavigation() && !isTextFreeMode());
             if (isDragByGesture) {
                 selectTab(Math.round(position), true);
             }
@@ -984,15 +990,22 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         for (int a = 0; a < tabs.length; a++) {
             GlassTabView tab = tabs[a];
             tab.setSelected(indexToPosition(a) == position, animated);
+            if (indexToPosition(a) == position && tabsView != null) tabsView.setAxSelectedTab(tab, animated);
         }
     }
 
     public void setGestureSelectedOverride(float animatedPosition, boolean allow) {
+        float weightedCenter = 0, totalWeight = 0;
         for (int index = 0; index < tabs.length; index++) {
             final int position = indexToPosition(index);
             final float visibility = Math.max(0, 1f - Math.abs(position - animatedPosition));
             tabs[index].setGestureSelectedOverride(visibility, allow);
+            if (tabs[index].getVisibility() == View.VISIBLE) {
+                weightedCenter += tabs[index].getVisualCenterX() * visibility;
+                totalWeight += visibility;
+            }
         }
+        tabsView.setAxGestureCenter(totalWeight > 0 ? weightedCenter / totalWeight : Float.NaN, allow);
         tabsView.invalidate();
     }
 
@@ -1357,6 +1370,7 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
     }
 
     private void blur3_updateColors() {
+        if (tabsView != null) tabsView.setAxGlassEnabled(AxAppearance.useGlassNavigation() && !isTextFreeMode());
         blur3_updateFadeColors();
         if (tabsViewBackground != null) {
             tabsViewBackground.updateColors();

@@ -1278,7 +1278,7 @@ public class ActionBarMenuItem extends FrameLayout {
         if (iconView == null) {
             return;
         }
-        iconView.setImageResource(iconViewResId = resId);
+        one.axgram.core.appearance.AxIconPack.bind(iconView, iconViewResId = resId);
     }
 
     public void setIcon(int resId, boolean animated) {
@@ -1286,9 +1286,9 @@ public class ActionBarMenuItem extends FrameLayout {
             return;
         }
         if (animated) {
-            AndroidUtilities.updateImageViewImageAnimated(iconView, iconViewResId = resId);
+            AndroidUtilities.updateImageViewImageAnimated(iconView, one.axgram.core.appearance.AxIconPack.drawable(getContext(), iconViewResId = resId));
         } else {
-            iconView.setImageResource(iconViewResId = resId);
+            one.axgram.core.appearance.AxIconPack.bind(iconView, iconViewResId = resId);
         }
     }
 

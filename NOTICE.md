@@ -164,3 +164,59 @@ Messenger LLP и не является официальным клиентом.
 Ключ подписи (`*.keystore`, `*.jks`) в репозитории тоже отсутствует — им
 подписываются обновления, и его утечка позволила бы подсунуть пользователям
 чужую сборку под видом обновления.
+
+
+## Изменение от 27 октября 2026: аккаунты
+
+В AxGram снята зависимость дополнительных аккаунтов от Premium. Изменены UserConfig.java, UserInfoActivity.java, MainTabsActivity.java, ProfileActivity.java, LogoutActivity.java и Components/Premium/DoubledLimitsBottomSheet.java; добавлены one/axgram/core/AxAccountSlots.java и AxAccountLimitAlert.java. Технический предел Java/JNI 128 сохранён.
+
+## Изменение от 28 октября 2026: оформление
+
+Добавлены темы AxGram Glass Light / Dark, системное переключение, возврат прежнего оформления и отдельный раздел настроек. Изменены Theme.java, LaunchActivity.java, SettingsActivity.java, AxSettingsActivity.java, MainTabsActivity.java, MainTabsLayout.java и Components/glass/GlassTabView.java; добавлены one/axgram/core/appearance/ и AxAppearanceSettingsActivity.java. Шрифт Onest распространяется с приложенной лицензией SIL Open Font License в assets/fonts/axgram_onest-OFL.txt.
+
+В версии 1252 добавлены акцентный цвет, независимые настройки размытия обоев и панелей, прозрачность стекла; исправлены цвета индикаторов файлов и синхронизация панели с пейджером. Изменены SharedConfig.java, ChatActivity.java, Components/SizeNotifierFrameLayout.java и классы Components/blur3/drawable/; добавлены AxAppearanceColors.java и AxWallpaperEffects.java.
+
+AxGram appearance hotfix1253: material toggle updates live views without theme recreation; native blur backend stays stable; scoped material drawables refresh on draw. Modified AxAppearance, AxAppearanceSettingsActivity, SharedConfig, BlurredBackgroundDrawable, BlurredBackgroundDrawableRenderNode and version metadata.
+
+AxGram hotfix1254: AxAppearanceSettingsActivity keeps live switch for native animation, synchronizes percentage enabled state immediately and on bind, guards disabled clicks; regression test in AxAppearanceThemeUpdateTest; version metadata updated.
+
+AxGram chat-list appearance1255: added AxChatListStyle, AxChatListSurface, AxChatListBackdrop and sampled approved wallpaper assets; modified DialogsActivity, DialogCell divider rendering, FilterTabsView drawing order/material, FragmentSearchField, Theme dialog typography and AxAppearanceColors tab contrast. Existing list/search/gesture/folder handlers retained. Added AxChatListStyleTest; version metadata updated.
+
+AxGram1256: segmented Glass folder geometry and painter (AxFolderTabsStyle/FilterTabsView), regular Onest labels and neutral selected text; live animated chat-list backdrop color binding and palette-coupled wallpaper blend; Glass quick day/night pairing; independent chat-list wallpaper visibility in AxAppearance/settings/RU+EN resources. Added AxFolderThemeTest; updated version metadata.
+
+AxGram1257: compact folder viewport slots (86 percent for more than three folders), 36dp panel body and 30dp selection; native 52dp touch container retained. Modified AxFolderTabsStyle, FilterTabsView, AxFolderThemeTest and version metadata.
+
+AxGram1258: bottom navigation retains approved geometry and animation; shared AxFolderTabsStyle.panelColor tint and matching top-panel native backing in Glass themes. Modified AxGlassNavigationDrawable, BlurredBackgroundProviderImpl, shared folder material helper and version metadata. Legacy backing retained.
+
+AxGram1259: unified Glass chat header drawing in ActionBar/ChatActivity (standard controls retained), shared folder-derived composer/header material with native blur fallback and appearance controls, Onest chat-header typography in ChatAvatarContainer, and AxChatHeaderTest rendering/theme-fallback regression coverage. Updated version metadata.
+
+AxGram1260: owner rejected merged chat header1259; original separate ActionBar surfaces, header typography and header material restored from1258. Removed the unified-header API, integration and associated experimental rendering tests. Composer material controls remain. Updated version metadata.
+
+AxGram1261: common Glass accent/contrast mapping for settings controls, selection checks, dialog actions and full audio player surfaces in AxAppearanceColors; direct native Telegram wallpaper picker from AxAppearanceSettingsActivity. Added cross-surface contrast coverage in AxAppearanceColorsTest; updated version metadata. Existing chat-header geometry remains unchanged.
+
+AxGram1262: common value-text accent binding in AxAppearanceSettingsActivity and shared full/mini-player palette in AxAppearanceColors; extended cross-surface regression coverage. Updated version metadata.
+
+AxGram1263: ThemeDescription supports AnimatedTextView field text colors for live palette updates; regression coverage keeps an existing animated settings value attached while cycling theme colors. Default blue interactive values retained with readable contrast; custom accent overrides remain available. Updated version metadata.
+
+AxGram1264: optional Lucide ISC static icon family via AxIconPack (110 mapped resources,79 local vectors; original dimensions/state/tint and live stock toggle retained). Shared TextCell/ManageChatTextCell/menu/themed-drawable/profile/settings bindings updated; main settings grouped into Appearance, AxGram features and Telegram settings with existing IDs/routes retained. RU/EN labels and regression/asset coverage added; version metadata updated. License in assets/axgram/icons/LICENSE-lucide.txt.
+# AxGram appearance update 1265 (2026-10-29)
+
+Expanded the optional Lucide-based UI icon family to account editing, profile action buttons and secondary settings symbols. Added native glass emblems with theme-aware colours for settings entries and profile actions. Stock icon fallback, routes and account data formats are retained. Lucide attribution and ISC terms are in `TMessagesProj/src/main/assets/axgram/icons/LICENSE-lucide.txt`.
+
+
+## AxGram first-run appearance, 1266 (2026-10-30)
+
+IntroActivity now renders a native AxGram welcome and shared appearance selection. The original introductory class is derived from Telegram Android (Copyright Nikolai Kudashov, 2013-2018; GNU GPL version 2 or later). Its API integration is retained; Telegram authentication, registration and recovery remain in LoginActivity. Added native artwork, startup resources and shared login backdrop/label typography. Account storage and authentication protocol were not changed.
+### AxGram Android 1267 — 2026-10-30
+
+AxGram modified the native welcome theme toggle to use its current mode, avoided
+rebuilding welcome controls on every theme animation frame, extended the optional
+icon family to Telegram Stars and GRAM, and added fresh-profile chat defaults
+(text size 16, message corner radius 17). Existing chat preferences are preserved.
+Relevant changes are in AxWelcomeView, IntroActivity, AxAppearance, AxIconPack,
+AxChatDefaults and their regression tests. Original authorship and licensing remain.
+
+
+## AxGram login navigation, 1268 (2026-10-31)
+
+LoginActivity now exposes back navigation throughout ordinary authentication pages, returns primary phone entry to IntroActivity appearance selection, and uses a 48dp back-button touch target. Account addition and management keep existing cancellation routes; Telegram mandatory email prompts retain their own restrictions. Authentication requests and registration logic are unchanged.

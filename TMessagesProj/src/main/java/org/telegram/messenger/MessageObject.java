@@ -11983,10 +11983,23 @@ public class MessageObject {
         checkMediaExistance(true);
     }
 
+    public File getArchivedMediaFile() {
+        if (!axDeleted || messageOwner == null || TextUtils.isEmpty(messageOwner.attachPath)) {
+            return null;
+        }
+        File file = new File(messageOwner.attachPath);
+        return file.isFile() ? file : null;
+    }
+
     public void checkMediaExistance(boolean useFileDatabaseQueue) {
         File cacheFile = null;
         attachPathExists = false;
         mediaExists = false;
+        if (getArchivedMediaFile() != null) {
+            attachPathExists = true;
+            mediaExists = true;
+            return;
+        }
         if (type == TYPE_EXTENDED_MEDIA_PREVIEW) {
             TLRPC.TL_messageExtendedMediaPreview preview = (TLRPC.TL_messageExtendedMediaPreview) messageOwner.media.extended_media.get(0);
             if (preview.thumb != null) {

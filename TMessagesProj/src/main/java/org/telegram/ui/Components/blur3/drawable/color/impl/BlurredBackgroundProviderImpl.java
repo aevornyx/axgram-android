@@ -20,10 +20,12 @@ import org.telegram.ui.Components.blur3.drawable.color.BlurredBackgroundProvider
 public class BlurredBackgroundProviderImpl {
     public static BlurredBackgroundProvider mainTabs(Theme.ResourcesProvider resourcesProvider) {
         return new BlurredBackgroundProviderBuilder(resourcesProvider)
+            .setAxAppearanceControls(true)
             .setBackgroundColor((r, isDark) -> {
                 final float alpha = LiteMode.isEnabled(LiteMode.FLAG_LIQUID_GLASS) ? 0.85f : 0.76f;
                 final int colorBg = Theme.getColor(Theme.key_windowBackgroundWhite, r);
-                final int colorTarget = Theme.getColor(Theme.key_glass_targetMainTabs, r);
+                final int colorTarget = Theme.getColor(one.axgram.core.appearance.AxAppearance.isGlassTheme()
+                        ? Theme.key_glass_targetMainTopPanel : Theme.key_glass_targetMainTabs, r);
                 return solveSrcColor(colorBg, colorTarget, alpha);
             })
             .setStrokeColorTop(0x11000000, 0x06FFFFFF)
@@ -36,6 +38,7 @@ public class BlurredBackgroundProviderImpl {
 
     public static BlurredBackgroundProvider topPanel(Theme.ResourcesProvider resourcesProvider) {
         return new BlurredBackgroundProviderBuilder(resourcesProvider)
+            .setAxAppearanceControls(true)
             .setBackgroundColor((r, isDark) -> {
                 final float alpha = LiteMode.isEnabled(LiteMode.FLAG_LIQUID_GLASS) ? 0.85f : 0.76f;
                 final int colorBg = Theme.getColor(Theme.key_windowBackgroundWhite, r);

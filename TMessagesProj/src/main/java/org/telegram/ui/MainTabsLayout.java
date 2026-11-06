@@ -5,6 +5,12 @@ import static org.telegram.messenger.AndroidUtilities.lerp;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.animation.ValueAnimator;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
+
+import one.axgram.core.appearance.AxGlassNavigationDrawable;
+import one.axgram.core.appearance.AxGlassNavigationGeometry;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.view.MotionEvent;
@@ -41,6 +47,99 @@ public class MainTabsLayout extends AnimatedLinearLayout {
     public MainTabsLayout(Context context, Theme.ResourcesProvider resourcesProvider) {
         super(context);
         this.resourcesProvider = resourcesProvider;
+    }
+
+    private boolean axGlassEnabled;
+    private AxGlassNavigationDrawable axGlassBackground;
+    private ValueAnimator axSelectionAnimator;
+    private View axSelectedTab;
+    private float axSelectionCenter = Float.NaN;
+    private boolean axGesture;
+    private boolean axOriginalClipChildren;
+    private boolean axOriginalClipToPadding;
+    private final int[] axOriginalPadding = new int[4];
+
+    public void setAxGlassEnabled(boolean enabled) {
+        if (axGlassEnabled == enabled) return;
+        axGlassEnabled = enabled;
+        if (enabled) {
+            axOriginalClipChildren = getClipChildren();
+            axOriginalClipToPadding = getClipToPadding();
+            setClipChildren(false);
+            setClipToPadding(false);
+            Drawable background = getBackground();
+            if (background != null) {
+                axOriginalPadding[0] = getPaddingLeft();
+                axOriginalPadding[1] = getPaddingTop();
+                axOriginalPadding[2] = getPaddingRight();
+                axOriginalPadding[3] = getPaddingBottom();
+                axGlassBackground = new AxGlassNavigationDrawable(background, resourcesProvider);
+                setBackground(axGlassBackground);
+                axGlassBackground.attachSource();
+                setPadding(dp(8), dp(20), dp(8), dp(8));
+            }
+        } else if (axGlassBackground != null) {
+            if (axSelectionAnimator != null) axSelectionAnimator.cancel();
+            Drawable background = axGlassBackground.detachSource();
+            axGlassBackground = null;
+            setBackground(background);
+            setPadding(axOriginalPadding[0], axOriginalPadding[1], axOriginalPadding[2], axOriginalPadding[3]);
+            setClipChildren(axOriginalClipChildren);
+            setClipToPadding(axOriginalClipToPadding);
+        }
+        ViewGroup.LayoutParams params = getLayoutParams();
+        if (params != null && params.height >= 0) {
+            params.height += dp(enabled ? AxGlassNavigationGeometry.EXTRA_TOP_DP : -AxGlassNavigationGeometry.EXTRA_TOP_DP);
+            setLayoutParams(params);
+        }
+        for (int i = 0; i < getChildCount(); i++) {
+            if (getChildAt(i) instanceof GlassTabView) ((GlassTabView) getChildAt(i)).setAxGlassEnabled(enabled);
+        }
+        requestLayout();
+        invalidate();
+    }
+
+    public void setAxSelectedTab(View tab, boolean animated) {
+        // Settings and Calls share one pager position; only the visible button owns the selector.
+        if (tab != null && !isViewVisible(tab)) return;
+        axSelectedTab = tab;
+        if (!axGlassEnabled || tab == null || axGesture || tab.getWidth() == 0) return;
+        float target = tab instanceof GlassTabView ? ((GlassTabView) tab).getVisualCenterX() : tab.getX() + tab.getWidth() / 2f;
+        if (axSelectionAnimator != null) axSelectionAnimator.cancel();
+        boolean animationsEnabled = Build.VERSION.SDK_INT < Build.VERSION_CODES.O || ValueAnimator.areAnimatorsEnabled();
+        if (!animated || !animationsEnabled || !AxGlassNavigationGeometry.isFinite(axSelectionCenter)) {
+            setAxSelectionCenter(target);
+        } else {
+            axSelectionAnimator = ValueAnimator.ofFloat(axSelectionCenter, target);
+            axSelectionAnimator.setDuration(320);
+            axSelectionAnimator.setInterpolator(me.vkryl.android.AnimatorUtils.DECELERATE_INTERPOLATOR);
+            axSelectionAnimator.addUpdateListener(a -> setAxSelectionCenter((Float) a.getAnimatedValue()));
+            axSelectionAnimator.start();
+        }
+    }
+
+    public void setAxGestureCenter(float center, boolean allow) {
+        boolean wasGesture = axGesture;
+        axGesture = allow;
+        if (!axGlassEnabled) return;
+        if (allow && AxGlassNavigationGeometry.isFinite(center)) {
+            if (axSelectionAnimator != null) axSelectionAnimator.cancel();
+            setAxSelectionCenter(center);
+        } else if (!allow && wasGesture) {
+            setAxSelectedTab(axSelectedTab, false);
+        }
+    }
+
+    private void setAxSelectionCenter(float center) {
+        axSelectionCenter = center;
+        if (axGlassBackground != null) axGlassBackground.setCenter(center);
+        invalidate();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        if (axSelectionAnimator != null) axSelectionAnimator.cancel();
+        super.onDetachedFromWindow();
     }
 
     private static final float[] PASS_TEXT_SIZES_DP = {12f, 12f, 10f};
@@ -232,12 +331,16 @@ public class MainTabsLayout extends AnimatedLinearLayout {
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
         checkVisualWidth();
+        setAxSelectedTab(axSelectedTab, false);
     }
 
     @Override
     protected void onItemsChanged() {
         super.onItemsChanged();
         checkVisualWidth();
+        if (axGlassEnabled && !axGesture && (axSelectionAnimator == null || !axSelectionAnimator.isRunning())) {
+            setAxSelectedTab(axSelectedTab, false);
+        }
     }
 
     private void checkVisualWidth() {
@@ -256,6 +359,7 @@ public class MainTabsLayout extends AnimatedLinearLayout {
 
 
     public void setTabSelected(View tab, boolean animated) {
+        setAxSelectedTab(tab, animated);
         for (int a = 0, N = getChildCount(); a < N; a++) {
             final View child = getChildAt(a);
             if (child instanceof GlassTabView) {
@@ -309,7 +413,7 @@ public class MainTabsLayout extends AnimatedLinearLayout {
 
     @Override
     protected void dispatchDraw(@NonNull Canvas canvas) {
-        if (drawCustomSelector) {
+        if (drawCustomSelector && !axGlassEnabled) {
             final float x = animatedLongSelectedViewCenterX + animatedLongSelectedViewOffsetX;
             final float sWidth = getInterpolatedWidthByX(x, this);
             final float sHeight = getHeight() - getPaddingTop() - getPaddingBottom();

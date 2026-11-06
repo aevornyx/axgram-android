@@ -7,6 +7,7 @@ import org.telegram.messenger.LiteMode;
 import org.telegram.ui.ActionBar.Theme;
 
 public class BlurredBackgroundColorProviderThemed implements BlurredBackgroundColorProvider {
+    @Override public boolean usesAxAppearanceControls() { return true; }
 
     private final Theme.ResourcesProvider resourcesProvider;
     private final int backgroundColorId;
